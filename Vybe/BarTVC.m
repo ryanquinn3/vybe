@@ -116,7 +116,7 @@ static NSString *INPUT_TYPE = @"plist";
         Bar *barObject = [[Bar alloc] init];
         barObject.name = bar[@"name"];
         barObject.address = bar[@"vicinity"];
-        barObject.phoneNumber = @"650.123.4567";
+      
 
         barObject.latitude = [bar[@"geometry"][@"location"][@"lat"] doubleValue];
         barObject.longitude = [bar[@"geometry"][@"location"][@"lng"] doubleValue];
@@ -138,7 +138,6 @@ static NSString *INPUT_TYPE = @"plist";
                 PFObject *parseBar = [PFObject objectWithClassName:@"Bar"];
                 parseBar[@"name"] = barObject.name;
                 parseBar[@"address"] = barObject.address;
-                parseBar[@"phone"] = barObject.phoneNumber;
                 parseBar[@"address"] = barObject.address;
                 parseBar[@"location"] = [PFGeoPoint geoPointWithLatitude:barObject.latitude
                                                                longitude:barObject.longitude];

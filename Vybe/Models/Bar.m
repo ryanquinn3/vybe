@@ -22,7 +22,6 @@
         self.object = obj;
         self.name = obj[@"name"];
         self.address = obj[@"address"];
-        self.phoneNumber = obj[@"phone"];
         self.longitude = [(PFGeoPoint*)obj[@"location"] longitude];
         self.latitude = [(PFGeoPoint*)obj[@"location"] latitude];
     }

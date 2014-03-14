@@ -28,6 +28,27 @@
     [[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT(23),NSFontAttributeName,nil] forState:UIControlStateNormal];
     
     
+    UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+    BarListViewController* listView = [mainStoryboard instantiateViewControllerWithIdentifier:@"BLVC"];
+    
+    SideMenuViewController* sideMenuView = [mainStoryboard instantiateViewControllerWithIdentifier:@"SMVC"];
+    
+    [sideMenuView setViewControllers:[[NSArray alloc] initWithObjects:listView,[mainStoryboard instantiateViewControllerWithIdentifier:@"BMVC"], nil]];
+    
+    
+    
+    
+    ICSDrawerController *drawer = [[ICSDrawerController alloc]initWithLeftViewController:sideMenuView centerViewController:listView];
+    
+    
+    self.window.rootViewController = drawer;
+    
+    [self.window makeKeyAndVisible];
+    
+    
+    
+    
+    
     
     return YES;
 }

@@ -7,13 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import "ICSDrawerController.h"
+#import <MapKit/MapKit.h>
+#import "Bar.h"
+#import "BarMapViewController.h"
+#import <Parse/Parse.h>
+#import "BarListViewController"
 
 @interface SideMenuViewController : UIViewController <ICSDrawerControllerChild,ICSDrawerControllerPresenting, UITableViewDataSource,UITableViewDelegate>
 
 @property (nonatomic,weak) ICSDrawerController * drawer;
+@property (strong,nonatomic) CLLocation* location;
 
 
--(id)initWithViewControllers:(NSArray*)vcs;
+
+-(void) setViewControllers:(NSArray *)viewControllers;
+
+
 @end

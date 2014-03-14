@@ -12,13 +12,10 @@
 @interface Bar : NSObject
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString * address;
-@property (nonatomic, strong) NSString * phoneNumber;
 @property (nonatomic, strong) UIImage *photo;
 @property (nonatomic) double latitude;
 @property (nonatomic) double longitude;
 @property (nonatomic, strong) PFObject* object;
-
-
 
 
 -(id)initWithPFOject:(PFObject*)obj;

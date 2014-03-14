@@ -7,6 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ICSDrawerController.h"
+#import "SideMenuViewController.h"
+#import "BarListViewController.h"
 
 @interface VybeAppDelegate : UIResponder <UIApplicationDelegate>
 

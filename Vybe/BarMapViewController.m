@@ -8,9 +8,10 @@
 
 #import "BarMapViewController.h"
 
-@interface BarMapViewController ()  <MKMapViewDelegate>
+@interface BarMapViewController ()  <MKMapViewDelegate,CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
-
+@property (weak,nonatomic) CLLocationManager* locationManager;
+@property (nonatomic) NSInteger locationErrorCode;
 @end
 
 @implementation BarMapViewController
@@ -25,17 +26,19 @@
 }
 
 - (IBAction)menuPressed:(id)sender {
-    [self.drawer open];
+    [(MapNavViewController*)self.navigationController menuPressed];
 }
 
 -(void) setNearbyBars:(NSArray *)nearbyBars
 {
-    self.nearbyBars = nearbyBars;
+    _nearbyBars = nearbyBars;
+    //[self updateMapAnnotations];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.locationManager startUpdatingLocation];
 	[self updateMapAnnotations];
 }
 
@@ -45,6 +48,37 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(CLLocationManager*)locationManager
+{
+    if (!_locationManager) {
+        CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+        
+        _locationManager = locationManager;
+        _locationManager.delegate = self;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    }
+    return _locationManager;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    self.location = [locations lastObject];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    self.locationErrorCode = error.code;
+}
+
+
+- (void)setLocation:(CLLocation *)location
+{
+    if (!_location) {
+        _location = location;
+        
+    }
+    
+}
 
 -(void)updateMapAnnotations
 {

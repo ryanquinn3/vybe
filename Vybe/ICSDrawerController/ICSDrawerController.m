@@ -369,11 +369,17 @@ typedef NS_ENUM(NSUInteger, ICSDrawerControllerState)
 
 - (void)open
 {
-    NSParameterAssert(self.drawerState == ICSDrawerControllerStateClosed);
-
-    [self willOpen];
-    
-    [self animateOpening];
+    //NSParameterAssert(self.drawerState == ICSDrawerControllerStateClosed);
+    if(self.drawerState == ICSDrawerControllerStateClosed)
+    {
+        [self willOpen];
+        [self animateOpening];
+    }
+    else if(self.drawerState == ICSDrawerControllerStateOpen)
+    {
+        [self willClose];
+        [self animateClosing];
+    }
 }
 
 - (void)willOpen

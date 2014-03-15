@@ -28,12 +28,12 @@
     [[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT(23),NSFontAttributeName,nil] forState:UIControlStateNormal];
     
     
-    UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-    BarListViewController* listView = [mainStoryboard instantiateViewControllerWithIdentifier:@"BLVC"];
+    UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ListNavViewController* listView = [mainStoryboard instantiateViewControllerWithIdentifier:@"BLNC"];
     
     SideMenuViewController* sideMenuView = [mainStoryboard instantiateViewControllerWithIdentifier:@"SMVC"];
     
-    [sideMenuView setViewControllers:[[NSArray alloc] initWithObjects:listView,[mainStoryboard instantiateViewControllerWithIdentifier:@"BMVC"], nil]];
+    [sideMenuView setViewControllers:[[NSArray alloc] initWithObjects:listView,[mainStoryboard instantiateViewControllerWithIdentifier:@"BMNC"], nil]];
     
     
     

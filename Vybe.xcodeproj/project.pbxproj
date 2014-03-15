@@ -41,6 +41,8 @@
 		DA67C87C18D38E6600A9860D /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA67C87B18D38E6600A9860D /* SideMenuViewController.m */; };
 		DA67C87F18D3960300A9860D /* BarMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA67C87E18D3960300A9860D /* BarMapViewController.m */; };
 		DA67C88518D3A25F00A9860D /* BarListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA67C88418D3A25F00A9860D /* BarListViewController.m */; };
+		DA6927F218D3B46200B49BCB /* ListNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6927F118D3B46200B49BCB /* ListNavViewController.m */; };
+		DA6927F518D3C53D00B49BCB /* MapNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6927F418D3C53D00B49BCB /* MapNavViewController.m */; };
 		DACAD7CB18B3A71600895526 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F24C2751849FA2900D2C9E6 /* Parse.framework */; };
 		DAF1F6A918C8066700FD63BA /* android-contact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF1F63218C8066600FD63BA /* android-contact@2x.png */; };
 		DAF1F6AA18C8066700FD63BA /* android-friends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF1F63318C8066600FD63BA /* android-friends@2x.png */; };
@@ -139,6 +141,10 @@
 		DA67C87E18D3960300A9860D /* BarMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarMapViewController.m; path = ../BarMapViewController.m; sourceTree = "<group>"; };
 		DA67C88318D3A25F00A9860D /* BarListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarListViewController.h; path = ../../BarListViewController.h; sourceTree = "<group>"; };
 		DA67C88418D3A25F00A9860D /* BarListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarListViewController.m; path = ../../BarListViewController.m; sourceTree = "<group>"; };
+		DA6927F018D3B46200B49BCB /* ListNavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListNavViewController.h; sourceTree = "<group>"; };
+		DA6927F118D3B46200B49BCB /* ListNavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListNavViewController.m; sourceTree = "<group>"; };
+		DA6927F318D3C53D00B49BCB /* MapNavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapNavViewController.h; sourceTree = "<group>"; };
+		DA6927F418D3C53D00B49BCB /* MapNavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapNavViewController.m; sourceTree = "<group>"; };
 		DAF1F63218C8066600FD63BA /* android-contact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "android-contact@2x.png"; sourceTree = "<group>"; };
 		DAF1F63318C8066600FD63BA /* android-friends@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "android-friends@2x.png"; sourceTree = "<group>"; };
 		DAF1F63418C8066600FD63BA /* BarTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarTVC.h; sourceTree = "<group>"; };
@@ -447,8 +453,12 @@
 				DA67C88418D3A25F00A9860D /* BarListViewController.m */,
 				DA67C87D18D3960300A9860D /* BarMapViewController.h */,
 				DA67C87E18D3960300A9860D /* BarMapViewController.m */,
+				DA6927F018D3B46200B49BCB /* ListNavViewController.h */,
+				DA6927F118D3B46200B49BCB /* ListNavViewController.m */,
 				DA67C87A18D38E6600A9860D /* SideMenuViewController.h */,
 				DA67C87B18D38E6600A9860D /* SideMenuViewController.m */,
+				DA6927F318D3C53D00B49BCB /* MapNavViewController.h */,
+				DA6927F418D3C53D00B49BCB /* MapNavViewController.m */,
 				DAF1F68518C8066700FD63BA /* RateBarViewController.h */,
 				DAF1F68618C8066700FD63BA /* RateBarViewController.m */,
 				DAF1F68718C8066700FD63BA /* RatingViewController.h */,
@@ -583,6 +593,7 @@
 				DAF1F6C318C8066700FD63BA /* CoreDataTableViewController.m in Sources */,
 				DAF1F6DA18C8066700FD63BA /* SFGaugeView.m in Sources */,
 				DAF1F6E418C8066700FD63BA /* VybeAppDelegate.m in Sources */,
+				DA6927F218D3B46200B49BCB /* ListNavViewController.m in Sources */,
 				DA67C87F18D3960300A9860D /* BarMapViewController.m in Sources */,
 				DAF1F6D518C8066700FD63BA /* RatingViewController.m in Sources */,
 				DAF1F6CC18C8066700FD63BA /* MSNeedleView.m in Sources */,
@@ -596,6 +607,7 @@
 				DAF1F6DE18C8066700FD63BA /* UICircularSlider.m in Sources */,
 				DAF1F6AB18C8066700FD63BA /* BarTVC.m in Sources */,
 				DAF1F6C518C8066700FD63BA /* DKRepeatableButton.m in Sources */,
+				DA6927F518D3C53D00B49BCB /* MapNavViewController.m in Sources */,
 				DA67C87918D38D7D00A9860D /* ICSDropShadowView.m in Sources */,
 				DAF1F6D818C8066700FD63BA /* RMStepsController.m in Sources */,
 				DAF1F6E018C8066700FD63BA /* BarViewController.m in Sources */,

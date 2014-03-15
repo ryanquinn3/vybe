@@ -17,12 +17,16 @@
 
 -(void)setNearbyBars:(NSArray *)nearbyBars
 {
-    self.nearbyBars = nearbyBars;
+    _nearbyBars = nearbyBars;
+    [self.tableView reloadData];
+    [((ListNavViewController *)self.navigationController) setNearbyBars:nearbyBars];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView.contentInset = UIEdgeInsetsMake(-36, 0, 0, 0);
+    [self queryParseForBars];
 	// Do any additional setup after loading the view.
 }
 
@@ -34,7 +38,7 @@
 
 
 - (IBAction)menuPressed:(id)sender {
-    [self.drawer open];
+    [((ListNavViewController *)self.navigationController) menuPressed];
 }
 
 
@@ -46,6 +50,7 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    //dunno if you can send index path as arguement
     [self performSegueWithIdentifier:@"toBar" sender:indexPath];
 }
 
@@ -87,6 +92,44 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
 {
     self.view.userInteractionEnabled = YES;
 }
+
+
+-(void)queryParseForBars
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"Bar"];
+    [query whereKeyExists:@"name"];
+    
+    
+    //does it in the background... wasn't working earlier
+    /*
+     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+     if(!error)
+     {
+     for(PFObject *obj in objects)
+     {
+     Bar* bar = [[Bar alloc] initWithPFOject:obj];
+     [self.nearbyBars addObject:bar];
+     }
+     }
+     else{
+     NSLog(@"Error: %@ %@",error, [error userInfo]);
+     }
+     
+     
+     }];*/
+
+        
+    NSArray* bars = [query findObjects];
+    NSMutableArray* temp_bars = [[NSMutableArray alloc]init];
+    for(PFObject *obj in bars)
+    {
+        Bar* bar = [[Bar alloc] initWithPFOject:obj];
+        [temp_bars addObject:bar];
+    }
+    [self setNearbyBars:[NSArray arrayWithArray:temp_bars]];
+    
+}
+
 
 
 

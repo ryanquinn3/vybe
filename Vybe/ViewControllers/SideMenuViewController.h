@@ -12,16 +12,18 @@
 #import "Bar.h"
 #import "BarMapViewController.h"
 #import <Parse/Parse.h>
-#import "BarListViewController"
+#import "BarListViewController.h"
+#import "ListNavViewController.h"
+#import "MapNavViewController.h"
 
 @interface SideMenuViewController : UIViewController <ICSDrawerControllerChild,ICSDrawerControllerPresenting, UITableViewDataSource,UITableViewDelegate>
 
 @property (nonatomic,weak) ICSDrawerController * drawer;
-@property (strong,nonatomic) CLLocation* location;
 
+@property (strong,nonatomic) NSArray* nearbyBars;
 
 
 -(void) setViewControllers:(NSArray *)viewControllers;
-
+-(void)setNearbyBars:(NSArray *)nearbyBars;
 
 @end

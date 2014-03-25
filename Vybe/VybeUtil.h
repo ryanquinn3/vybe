@@ -47,4 +47,28 @@
 #define ALIZARIN 0xe74c3c
 
 #define MASCOT_IMG @"VybeMascot.jpg"
+
+#define NEARBY_CAT_IMG @"map-small.png"
+
+
+#define ATMOS_CAT_IMG @"atmos-small.png"
+#define ATMOS_LOW_IMG @"beer2-small.png"
+#define ATMOS_HIGH_IMG @"dancing-small.png"
+
+
+#define RATIO_LOW_IMG @"guy-small.png"
+#define RATIO_HIGH_IMG @"girl-small.png"
+
+#define WAIT_CAT_IMG @"red_carpet-small.png"
+#define WAIT_HIGH_IMG @"line-small.png"
+#define WAIT_LOW_IMG @"noline-small.png"
+
+#define CROWD_CAT_IMG @"crowd-cat-small.png"
+#define CROWD_LOW_IMG @"nocrowd-small.png"
+#define CROWD_HIGH_IMG @"crowded-small.png"
+
+#define RATIO_CAT_IMG @"gender-small.png"
+
+#define COVER_CAT_IMG @"2_dollar-small.png"
+
 #endif

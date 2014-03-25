@@ -15,6 +15,7 @@
 #import "BarListViewController.h"
 #import "ListNavViewController.h"
 #import "MapNavViewController.h"
+#import "VybeUtil.h"
 
 @interface SideMenuViewController : UIViewController <ICSDrawerControllerChild,ICSDrawerControllerPresenting, UITableViewDataSource,UITableViewDelegate>
 

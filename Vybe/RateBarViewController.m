@@ -66,12 +66,8 @@
 }
 
 - (void)finishedAllSteps {
-    NSLog(@"%@",self.ratingValues);
-    
     
     //send to parse
-    
-    
     
     
     [self dismissViewControllerAnimated:YES completion:nil];

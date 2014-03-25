@@ -42,6 +42,9 @@ NSArray* cellLabels;
     self.lastRowSelected = 0;
     self.nearbyBars = [[NSMutableArray alloc]init];
     
+    self.view.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    self.viewsTable.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    
 	// Do any additional setup after loading the view.
 }
 

@@ -10,10 +10,13 @@
 
 @interface BarListViewController ()
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) UISegmentedControl* filterControl;
 
 @end
 
 @implementation BarListViewController
+
+Bar* selectedBar;
 
 -(void)setNearbyBars:(NSArray *)nearbyBars
 {
@@ -21,11 +24,45 @@
     [self.tableView reloadData];
     [((ListNavViewController *)self.navigationController) setNearbyBars:nearbyBars];
 }
+-(void)initFilterControl
+{
+    NSArray* items = [NSArray arrayWithObjects:@"Atmos",@"Crowd",@"Ratio",@"Wait",@"Cover",@"Nearby",nil];
+    
+    
+    self.filterControl = [[UISegmentedControl alloc]initWithItems:items];
+    self.filterControl.frame = CGRectMake(-4, 449, 328, 55);
+    self.filterControl.selectedSegmentIndex = 0;
+    [self.filterControl setTintColor:UIColorFromRGB(MIDNIGHT_BLUE, 1)];
+    
+    [self.filterControl setImage:[UIImage imageNamed:ATMOS_CAT_IMG] forSegmentAtIndex:0];
+    [self.filterControl setImage:[UIImage imageNamed:CROWD_CAT_IMG] forSegmentAtIndex:1];
+    [self.filterControl setImage:[UIImage imageNamed:RATIO_CAT_IMG] forSegmentAtIndex:2];
+    [self.filterControl setImage:[UIImage imageNamed:WAIT_CAT_IMG] forSegmentAtIndex:3];
+    [self.filterControl setImage:[UIImage imageNamed:COVER_CAT_IMG] forSegmentAtIndex:4];
+    [self.filterControl setImage:[UIImage imageNamed:NEARBY_CAT_IMG] forSegmentAtIndex:5];
+    
+    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:VYBE_FONT(16),NSFontAttributeName, nil];
+    [self.filterControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [self.view addSubview:self.filterControl];
+
+    
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.tableView.contentInset = UIEdgeInsetsMake(-36, 0, 0, 0);
+    
+    [self initFilterControl];
+    
+   
+    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(CONCRETE, 1);
+    self.navigationController.navigationBar.translucent = NO;
+    
+    self.tableView.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    self.view.backgroundColor = UIColorFromRGB(CONCRETE, 1);
+    
+    selectedBar = nil;
     [self queryParseForBars];
 	// Do any additional setup after loading the view.
 }
@@ -50,8 +87,8 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //dunno if you can send index path as arguement
-    [self performSegueWithIdentifier:@"toBar" sender:indexPath];
+    selectedBar = self.nearbyBars[indexPath.row];
+    [self performSegueWithIdentifier:@"toBar" sender:self];
 }
 
 
@@ -64,7 +101,7 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
     Bar* currentBar = self.nearbyBars[indexPath.row];
     cell.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
     cell.textLabel.text = currentBar.name;
-    cell.textLabel.font = VYBE_FONT(14);
+    cell.textLabel.font = VYBE_FONT(20);
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
@@ -72,11 +109,9 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"showBar"]) {
+    if ([segue.identifier isEqualToString:@"toBar"]) {
         
-        NSIndexPath* indexPath = (NSIndexPath*)sender;
-        
-        ((RateBarViewController*) segue.destinationViewController).selectedBar = self.nearbyBars[indexPath.row];
+        ((BarViewController*) segue.destinationViewController).selectedBar = selectedBar;
         
     }
 }

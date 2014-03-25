@@ -10,6 +10,7 @@
 #import <MapKit/MapKit.h>
 #import "Bar.h"
 #import "ICSDrawerController.h"
+#import "VybeUtil.h"
 #import "MapNavViewController.h"
 
 @interface BarMapViewController : UIViewController

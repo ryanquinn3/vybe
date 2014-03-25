@@ -38,6 +38,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
+    self.navigationController.navigationBar.tintColor = UIColorFromRGB(CONCRETE, 1);
+    self.navigationController.navigationBar.translucent = NO;
     [self.locationManager startUpdatingLocation];
 	[self updateMapAnnotations];
 }

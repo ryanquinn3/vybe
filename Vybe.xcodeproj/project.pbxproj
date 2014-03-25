@@ -44,6 +44,20 @@
 		DA6927F218D3B46200B49BCB /* ListNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6927F118D3B46200B49BCB /* ListNavViewController.m */; };
 		DA6927F518D3C53D00B49BCB /* MapNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6927F418D3C53D00B49BCB /* MapNavViewController.m */; };
 		DACAD7CB18B3A71600895526 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F24C2751849FA2900D2C9E6 /* Parse.framework */; };
+		DACD0A8018E2058A0088F9CD /* beer2-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A7F18E2058A0088F9CD /* beer2-small@2x.png */; };
+		DACD0A8318E2080F0088F9CD /* dancing-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8218E2080F0088F9CD /* dancing-small@2x.png */; };
+		DACD0A8518E20CC10088F9CD /* guy-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8418E20CC10088F9CD /* guy-small@2x.png */; };
+		DACD0A8718E20E140088F9CD /* girl-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8618E20E140088F9CD /* girl-small@2x.png */; };
+		DACD0A8918E20FA80088F9CD /* line-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8818E20FA80088F9CD /* line-small@2x.png */; };
+		DACD0A8B18E214D10088F9CD /* noline-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8A18E214D10088F9CD /* noline-small@2x.png */; };
+		DACD0A8D18E21ABF0088F9CD /* crowded-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8C18E21ABF0088F9CD /* crowded-small@2x.png */; };
+		DACD0A8F18E21BDB0088F9CD /* nocrowd-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A8E18E21BDB0088F9CD /* nocrowd-small@2x.png */; };
+		DACD0A9318E227D70088F9CD /* red_carpet-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9218E227D70088F9CD /* red_carpet-small@2x.png */; };
+		DACD0A9518E228AD0088F9CD /* 2_dollar-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9418E228AD0088F9CD /* 2_dollar-small@2x.png */; };
+		DACD0A9718E22AD70088F9CD /* gender-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9618E22AD70088F9CD /* gender-small@2x.png */; };
+		DACD0A9918E22B680088F9CD /* map-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9818E22B680088F9CD /* map-small@2x.png */; };
+		DACD0A9B18E22C7D0088F9CD /* atmos-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9A18E22C7D0088F9CD /* atmos-small@2x.png */; };
+		DACD0A9D18E22D380088F9CD /* crowd-cat-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DACD0A9C18E22D380088F9CD /* crowd-cat-small@2x.png */; };
 		DAF1F6A918C8066700FD63BA /* android-contact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF1F63218C8066600FD63BA /* android-contact@2x.png */; };
 		DAF1F6AA18C8066700FD63BA /* android-friends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF1F63318C8066600FD63BA /* android-friends@2x.png */; };
 		DAF1F6AB18C8066700FD63BA /* BarTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF1F63518C8066600FD63BA /* BarTVC.m */; };
@@ -145,6 +159,20 @@
 		DA6927F118D3B46200B49BCB /* ListNavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListNavViewController.m; sourceTree = "<group>"; };
 		DA6927F318D3C53D00B49BCB /* MapNavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapNavViewController.h; sourceTree = "<group>"; };
 		DA6927F418D3C53D00B49BCB /* MapNavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapNavViewController.m; sourceTree = "<group>"; };
+		DACD0A7F18E2058A0088F9CD /* beer2-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "beer2-small@2x.png"; path = "../beer2-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8218E2080F0088F9CD /* dancing-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dancing-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8418E20CC10088F9CD /* guy-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guy-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8618E20E140088F9CD /* girl-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "girl-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8818E20FA80088F9CD /* line-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "line-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8A18E214D10088F9CD /* noline-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "noline-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8C18E21ABF0088F9CD /* crowded-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "crowded-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A8E18E21BDB0088F9CD /* nocrowd-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nocrowd-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9218E227D70088F9CD /* red_carpet-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "red_carpet-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9418E228AD0088F9CD /* 2_dollar-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "2_dollar-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9618E22AD70088F9CD /* gender-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gender-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9818E22B680088F9CD /* map-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "map-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9A18E22C7D0088F9CD /* atmos-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "atmos-small@2x.png"; sourceTree = "<group>"; };
+		DACD0A9C18E22D380088F9CD /* crowd-cat-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "crowd-cat-small@2x.png"; sourceTree = "<group>"; };
 		DAF1F63218C8066600FD63BA /* android-contact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "android-contact@2x.png"; sourceTree = "<group>"; };
 		DAF1F63318C8066600FD63BA /* android-friends@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "android-friends@2x.png"; sourceTree = "<group>"; };
 		DAF1F63418C8066600FD63BA /* BarTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarTVC.h; sourceTree = "<group>"; };
@@ -343,9 +371,31 @@
 			path = ICSDrawerController;
 			sourceTree = "<group>";
 		};
+		DACD0A8118E207E10088F9CD /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				DACD0A9C18E22D380088F9CD /* crowd-cat-small@2x.png */,
+				DACD0A9A18E22C7D0088F9CD /* atmos-small@2x.png */,
+				DACD0A9818E22B680088F9CD /* map-small@2x.png */,
+				DACD0A9618E22AD70088F9CD /* gender-small@2x.png */,
+				DACD0A9418E228AD0088F9CD /* 2_dollar-small@2x.png */,
+				DACD0A9218E227D70088F9CD /* red_carpet-small@2x.png */,
+				DACD0A8E18E21BDB0088F9CD /* nocrowd-small@2x.png */,
+				DACD0A8C18E21ABF0088F9CD /* crowded-small@2x.png */,
+				DACD0A8A18E214D10088F9CD /* noline-small@2x.png */,
+				DACD0A8818E20FA80088F9CD /* line-small@2x.png */,
+				DACD0A8618E20E140088F9CD /* girl-small@2x.png */,
+				DACD0A8418E20CC10088F9CD /* guy-small@2x.png */,
+				DACD0A8218E2080F0088F9CD /* dancing-small@2x.png */,
+				DACD0A7F18E2058A0088F9CD /* beer2-small@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		DAF1F63118C8066600FD63BA /* Vybe */ = {
 			isa = PBXGroup;
 			children = (
+				DACD0A8118E207E10088F9CD /* Images */,
 				DAF1F63218C8066600FD63BA /* android-contact@2x.png */,
 				DAF1F63318C8066600FD63BA /* android-friends@2x.png */,
 				DAF1F63418C8066600FD63BA /* BarTVC.h */,
@@ -553,22 +603,36 @@
 			files = (
 				DAF1F6AD18C8066700FD63BA /* beer@2x.png in Resources */,
 				DAF1F6D118C8066700FD63BA /* man@2x.png in Resources */,
+				DACD0A8D18E21ABF0088F9CD /* crowded-small@2x.png in Resources */,
 				DAF1F6CF18C8066700FD63BA /* Images.xcassets in Resources */,
 				DAF1F6E718C8066700FD63BA /* woman@2x.png in Resources */,
+				DACD0A8518E20CC10088F9CD /* guy-small@2x.png in Resources */,
 				DAF1F6AE18C8066700FD63BA /* button.png in Resources */,
+				DACD0A9318E227D70088F9CD /* red_carpet-small@2x.png in Resources */,
+				DACD0A8F18E21BDB0088F9CD /* nocrowd-small@2x.png in Resources */,
+				DACD0A9518E228AD0088F9CD /* 2_dollar-small@2x.png in Resources */,
 				DAF1F6AF18C8066700FD63BA /* circula-medium.otf in Resources */,
 				DAF1F6E518C8066700FD63BA /* VybeMascot@2x.jpg in Resources */,
 				DAF1F6DB18C8066700FD63BA /* thumbsdown@2x.png in Resources */,
 				DAF1F6C718C8066700FD63BA /* down.png in Resources */,
+				DACD0A9B18E22C7D0088F9CD /* atmos-small@2x.png in Resources */,
+				DACD0A8718E20E140088F9CD /* girl-small@2x.png in Resources */,
 				DAF1F6DC18C8066700FD63BA /* thumbsup@2x.png in Resources */,
 				DAF1F6D318C8066700FD63BA /* music-note@2x.png in Resources */,
+				DACD0A9918E22B680088F9CD /* map-small@2x.png in Resources */,
+				DACD0A8018E2058A0088F9CD /* beer2-small@2x.png in Resources */,
 				DAF1F6DF18C8066700FD63BA /* up.png in Resources */,
+				DACD0A9718E22AD70088F9CD /* gender-small@2x.png in Resources */,
+				DACD0A8B18E214D10088F9CD /* noline-small@2x.png in Resources */,
 				DAF1F6AA18C8066700FD63BA /* android-friends@2x.png in Resources */,
+				DACD0A8318E2080F0088F9CD /* dancing-small@2x.png in Resources */,
 				DAF1F6DD18C8066700FD63BA /* LICENSE in Resources */,
 				3F6EB97718384FA900AA68FC /* GoogleMaps.bundle in Resources */,
 				DAF1F6A918C8066700FD63BA /* android-contact@2x.png in Resources */,
 				DAF1F6D918C8066700FD63BA /* sapa-bar.jpg in Resources */,
+				DACD0A8918E20FA80088F9CD /* line-small@2x.png in Resources */,
 				DAF1F6C818C8066700FD63BA /* InfoPlist.strings in Resources */,
+				DACD0A9D18E22D380088F9CD /* crowd-cat-small@2x.png in Resources */,
 				DAF1F6E618C8066700FD63BA /* woman-sm.png in Resources */,
 				DAF1F6AC18C8066700FD63BA /* Main.storyboard in Resources */,
 			);

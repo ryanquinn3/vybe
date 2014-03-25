@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "VybeUtil.h"
 #import "Bar.h"
-#import "RateBarViewController.h"
+#import "BarViewController.h"
 #import "ICSDrawerController.h"
 #import "ListNavViewController.h"
 

@@ -10,6 +10,7 @@
 
 #import "SFGaugeView.h"
 #import "MSAnnotatedGauge.h"
+#import "MSSimpleGauge.h"
 #import "VybeUtil.h"
 #import <Parse/Parse.h>
 
@@ -21,11 +22,11 @@
 
 @property (strong, nonatomic) NSMutableDictionary* barRating;
 
-@property (strong,nonatomic) MSAnnotatedGauge* ratioGauge;
-@property (strong,nonatomic) MSAnnotatedGauge* atmosphereGauge;
-@property (strong,nonatomic) MSAnnotatedGauge* coverGauge;
-@property (strong,nonatomic) MSAnnotatedGauge* crowdGauge;
-@property (strong,nonatomic) MSAnnotatedGauge* waitTimeGauge;
+@property (strong,nonatomic) MSSimpleGauge* ratioGauge;
+@property (strong,nonatomic) MSSimpleGauge* atmosphereGauge;
+@property (strong,nonatomic) MSSimpleGauge* crowdGauge;
+@property (strong,nonatomic) MSSimpleGauge* waitTimeGauge;
+
 @property (strong, nonatomic) IBOutlet UIButton *shapeButton;
 @property (strong, nonatomic) IBOutlet UILabel *walkDistanceLabel;
 
@@ -52,11 +53,7 @@
     
     self.ratioGauge.value = (int)([self.barRating[@"ratio"]floatValue]*100);
     self.atmosphereGauge.value = (int)([self.barRating[@"atmosphere"]floatValue]*100);
-    self.coverGauge.value = (int)([self.barRating[@"cover"]floatValue]*100);
     self.crowdGauge.value = (int)([self.barRating[@"crowd"]floatValue]*100);
-       
-    
-    
 }
 
 - (void)updateBarStats
@@ -124,130 +121,150 @@
 {
     CGSize screenSize = [[UIScreen mainScreen] bounds].size;
     
+    CGRect atmosRect= CGRectMake(165,85,130,65);
+    CGRect crowdRect= CGRectMake(165,163,130,65);
+    CGRect ratioRect= CGRectMake(165,241,130,65);
+    CGRect waitRect = CGRectMake(165,319,130,65);
     
-    CGRect ratioRect= CGRectMake(15,80,140,90);
-    CGRect coverRect= CGRectMake(15,300,140,90);
-    CGRect atmosRect= CGRectMake(95,200,140,90);
-    CGRect crowdRect= CGRectMake(175,80,140,90);
-    CGRect waitRect = CGRectMake(175,300,140,90);
+    
+    //Atmosphere Images & Label
+    CGRect atLabelRect = CGRectMake(15, 94, 130, 40);
+    CGRect danceRect = CGRectMake(270, 115, 32, 30);
+    CGRect beerRect = CGRectMake(160, 115, 35, 30);
+    
+    
+    //Crowd Images & Label
+    CGRect crowdLabelRect = CGRectMake(15, 175, 130, 40);
+    CGRect crowdedRect = CGRectMake(270, 190, 33,30);
+    CGRect nocrowdRect = CGRectMake(160, 190, 33,30);
+    
+    
+    
+    
+    //Ratio Images & Label
+    CGRect ratioLabelRect = CGRectMake(15, 254, 150, 40);
+    CGRect guyRect = CGRectMake(160, 270, 27, 35);
+    CGRect girlRect = CGRectMake(268, 270, 30, 35);
+    
+    
+    
+    //Entry Line Images & Label
+    CGRect lineLabelRect = CGRectMake(15, 334, 130, 40);
+    CGRect lineRect = CGRectMake(269, 352, 30, 28);
+    CGRect nolineRect = CGRectMake(166, 352, 22, 28);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!(screenSize.height > 480.0f))
         {
-          //  ratioRect.origin.y -= 5;
-            //crowdRect.origin.y -= 5;
-            
-            atmosRect.origin.y -= 25;
-
-            waitRect.origin.y  -= 40;
-            coverRect.origin.y -= 40;
+            //Need to figure out what adjustments need to be made
+            // ratioRect.origin.y -= 5;
+            // crowdRect.origin.y -= 5;
+            //   atmosRect.origin.y -= 25;
+            // waitRect.origin.y  -= 40;
         }}
+    //ATMOSPHERE
+    UIImageView* beerImage = [[UIImageView alloc] initWithFrame:beerRect];
+    [beerImage setImage:[UIImage imageNamed:ATMOS_LOW_IMG]];
+    
+    UIImageView* danceImage = [[UIImageView alloc] initWithFrame:danceRect];
+    [danceImage setImage:[UIImage imageNamed:ATMOS_HIGH_IMG]];
+    
+    UILabel* atmosphereLabel = [[UILabel alloc]initWithFrame:atLabelRect];
+    atmosphereLabel.font = VYBE_FONT(28);
+    atmosphereLabel.text = @"atmosphere";
+    atmosphereLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    
+    //CROWD
+    UILabel* crowdLabel = [[UILabel alloc]initWithFrame:crowdLabelRect];
+    crowdLabel.font = VYBE_FONT(28);
+    crowdLabel.text = @"crowdedness";
+    crowdLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    
+    UIImageView* nocrowdImage = [[UIImageView alloc]initWithFrame:nocrowdRect];
+    [nocrowdImage setImage:[UIImage imageNamed:CROWD_LOW_IMG]];
+    
+    
+    UIImageView* crowdedImage = [[UIImageView alloc]initWithFrame:crowdedRect];
+    [crowdedImage setImage:[UIImage imageNamed:CROWD_HIGH_IMG]];
+    
+    
+    //RATIO
+    UILabel* ratioLabel = [[UILabel alloc]initWithFrame:ratioLabelRect];
+    ratioLabel.font = VYBE_FONT(28);
+    ratioLabel.text = @"girl-guy ratio";
+    ratioLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    
+    UIImageView* guyImage = [[UIImageView alloc]initWithFrame:guyRect];
+    [guyImage setImage:[UIImage imageNamed:RATIO_LOW_IMG]];
+    
+    UIImageView* girlImage = [[UIImageView alloc]initWithFrame:girlRect];
+    [girlImage setImage:[UIImage imageNamed:RATIO_HIGH_IMG]];
+    
+    
+    //Entry Line
+    UILabel* waitLabel = [[UILabel alloc]initWithFrame:lineLabelRect];
+    waitLabel.font = VYBE_FONT(28);
+    waitLabel.text = @"entry line";
+    waitLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    
+    UIImageView* lineImage = [[UIImageView alloc]initWithFrame:lineRect];
+    [lineImage setImage:[UIImage imageNamed:WAIT_HIGH_IMG]];
+    
+    UIImageView* nolineImage = [[UIImageView alloc]initWithFrame:nolineRect];
+    [nolineImage setImage:[UIImage imageNamed:WAIT_LOW_IMG]];
+
     
 
-    self.ratioGauge = [[MSAnnotatedGauge alloc]initWithFrame:ratioRect];
-    self.coverGauge = [[MSAnnotatedGauge alloc]initWithFrame:coverRect];
-    self.atmosphereGauge = [[MSAnnotatedGauge alloc]initWithFrame:atmosRect];
-    self.crowdGauge = [[MSAnnotatedGauge alloc]initWithFrame:crowdRect];
-    self.waitTimeGauge = [[MSAnnotatedGauge alloc]initWithFrame:waitRect];
+
+    self.ratioGauge = [[MSSimpleGauge alloc]initWithFrame:ratioRect];
+    self.atmosphereGauge = [[MSSimpleGauge alloc]initWithFrame:atmosRect];
+    self.crowdGauge = [[MSSimpleGauge alloc]initWithFrame:crowdRect];
+    self.waitTimeGauge = [[MSSimpleGauge alloc]initWithFrame:waitRect];
     
     
     self.ratioGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
-    self.coverGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
+    
     self.atmosphereGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
     self.crowdGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
     self.waitTimeGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
     
     self.ratioGauge.minValue = 0;
-    self.coverGauge.minValue = 0;
     self.atmosphereGauge.minValue =0;
     self.crowdGauge.minValue = 0;
     self.waitTimeGauge.minValue = 0;
     
     self.ratioGauge.maxValue = 100;
-    self.coverGauge.maxValue = 100;
+    
     self.atmosphereGauge.maxValue = 100;
     self.crowdGauge.maxValue = 100;
     self.waitTimeGauge.maxValue = 100;
     
-    self.ratioGauge.titleLabel.text = @"Ratio";
-    self.coverGauge.titleLabel.text = @"Cover Charge";
-    self.atmosphereGauge.titleLabel.text = @"Atmosphere";
-    self.crowdGauge.titleLabel.text = @"Crowdedness";
-    self.waitTimeGauge.titleLabel.text = @"Wait time";
+    self.ratioGauge.fillArcFillColor = UIColorFromRGB(CLOUDS, 1);
+    self.ratioGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS, 1);
     
-    
-    self.ratioGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.coverGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.atmosphereGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.crowdGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.waitTimeGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
-    self.ratioGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.coverGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.atmosphereGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.crowdGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.waitTimeGauge.titleLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
-    
-    
-    
-    self.ratioGauge.startRangeLabel.text = @"All guys";
-    self.ratioGauge.endRangeLabel.text = @"All girls";
-    
-    self.coverGauge.startRangeLabel.text = @"Free";
-    self.coverGauge.endRangeLabel.text = @"$20+";
-    
-    self.atmosphereGauge.startRangeLabel.text = @"Talking";
-    self.atmosphereGauge.endRangeLabel.text = @"Dancing";
-    
-    self.crowdGauge.startRangeLabel.text = @"Empty";
-    self.crowdGauge.endRangeLabel.text = @"Packed";
-    
-    self.waitTimeGauge.startRangeLabel.text = @"No wait";
-    self.waitTimeGauge.endRangeLabel.text = @"30 mins+";
-    
-    
-    
-    self.ratioGauge.fillArcFillColor = UIColorFromRGB(HOT_PINK, 1);
-    self.ratioGauge.fillArcStrokeColor = UIColorFromRGB(HOT_PINK, 1);
-    
-
-    self.ratioGauge.backgroundArcFillColor = UIColorFromRGB(BABY_BLUE, 1);
+    self.ratioGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS, 1);
     self.ratioGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE, 1);
 
-
-    self.atmosphereGauge.backgroundArcFillColor = UIColorFromRGB(TURQUOISE, 1);
+    self.atmosphereGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS, 1);
     self.atmosphereGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE, 1);
 
-    self.atmosphereGauge.fillArcFillColor = UIColorFromRGB(POMEGRANATE, 1);
-    self.atmosphereGauge.fillArcStrokeColor = UIColorFromRGB(POMEGRANATE, 1);
-
-
-
-    self.coverGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS, 1);
-    self.coverGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE, 1);
-
-    self.coverGauge.fillArcFillColor = UIColorFromRGB(NEPHRITIS, 1);
-    self.coverGauge.fillArcStrokeColor = UIColorFromRGB(NEPHRITIS, 1);
+    self.atmosphereGauge.fillArcFillColor = UIColorFromRGB(CLOUDS, 1);
+    self.atmosphereGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS, 1);
     
-
-    self.crowdGauge.backgroundArcFillColor = UIColorFromRGB(0x1abc9c,1);
+    self.crowdGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS,1);
     self.crowdGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE,1);
 
-    self.crowdGauge.fillArcFillColor = UIColorFromRGB(0xf39c12,1);
-    self.crowdGauge.fillArcStrokeColor = UIColorFromRGB(0xf39c12,1);
+    self.crowdGauge.fillArcFillColor = UIColorFromRGB(CLOUDS,1);
+    self.crowdGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS,1);
 
-
-    self.waitTimeGauge.backgroundArcFillColor = UIColorFromRGB(EMERALD,1);
+    self.waitTimeGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS,1);
     self.waitTimeGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE,1);
     
-    self.waitTimeGauge.fillArcFillColor = UIColorFromRGB(0xff0000,1);
-    self.waitTimeGauge.fillArcStrokeColor = UIColorFromRGB(0xff0000,1);
-    
+    self.waitTimeGauge.fillArcFillColor = UIColorFromRGB(CLOUDS,1);
+    self.waitTimeGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS,1);
     
     
     self.ratioGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
-    self.coverGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
     self.atmosphereGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
     self.waitTimeGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
     self.crowdGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
@@ -255,9 +272,20 @@
 
     [self.view addSubview:self.ratioGauge];
     [self.view addSubview:self.atmosphereGauge];
-    [self.view addSubview:self.coverGauge];
     [self.view addSubview:self.crowdGauge];
     [self.view addSubview:self.waitTimeGauge];
+    [self.view addSubview:atmosphereLabel];
+    [self.view addSubview:beerImage];
+    [self.view addSubview:danceImage];
+    [self.view addSubview:crowdLabel];
+    [self.view addSubview:ratioLabel];
+    [self.view addSubview:waitLabel];
+    [self.view addSubview:guyImage];
+    [self.view addSubview:girlImage];
+    [self.view addSubview:lineImage];
+    [self.view addSubview:nolineImage];
+    [self.view addSubview:crowdedImage];
+    [self.view addSubview:nocrowdImage];
     
     
 }

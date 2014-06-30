@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Vybe": {
+            "applicationId": "kzBHBoxTKlczUznz7Gs7WhSFEImczKd0WKUUCLCh", 
+            "masterKey": "Kd9GsQ69ioqGUvQFcud7wnc7eFKLQEnWY0vJYT24"
+        }, 
+        "_default": {
+            "link": "Vybe"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.18"
+    }
+}

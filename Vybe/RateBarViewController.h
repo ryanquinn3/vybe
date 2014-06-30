@@ -11,9 +11,5 @@
 
 @interface RateBarViewController : RMStepsController
 @property (strong,nonatomic) Bar* selectedBar;
-
-
-
-
 -(void)setRating:(NSNumber*)value forKey:(NSString *)key;
 @end

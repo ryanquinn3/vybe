@@ -12,12 +12,16 @@
 #import "BarViewController.h"
 #import "ICSDrawerController.h"
 #import "ListNavViewController.h"
+#import "BarViewCell.h"
+#import "LoginViewController.h"
+#import "TransitionDelegate.h"
+#import "SignUpViewController.h"
+#import "BarDetailTableViewCell.h"
 
 
-
-@interface BarListViewController : UIViewController <ICSDrawerControllerChild, ICSDrawerControllerPresenting>
+@interface BarListViewController : UIViewController <ICSDrawerControllerChild, ICSDrawerControllerPresenting,UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,weak) ICSDrawerController* drawer;
 @property (strong,nonatomic) NSArray* nearbyBars;
-
 -(void) setNearbyBars:(NSArray *)nearbyBars;
+-(void) presentSignUpViewController;
 @end

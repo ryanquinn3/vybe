@@ -10,10 +10,6 @@
 
 @implementation Bar
 
-
-
-
-
 -(id)initWithPFOject:(PFObject*)obj
 {
     self = [super init];

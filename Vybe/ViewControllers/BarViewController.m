@@ -28,8 +28,10 @@
 @property (strong,nonatomic) MSSimpleGauge* waitTimeGauge;
 
 @property (strong, nonatomic) IBOutlet UIButton *shapeButton;
-@property (strong, nonatomic) IBOutlet UILabel *walkDistanceLabel;
 
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *refreshButton;
+
+@property (strong, nonatomic) IBOutlet UIImageView *coverImage;
 
 
 @end
@@ -42,6 +44,7 @@
 {
     self.barTitle.text = self.selectedBar.name;
     self.barAddress.text = self.selectedBar.address;
+    self.walkDistanceLabel.text = self.walkDistanceString;
    }
 - (IBAction)refreshPressed:(id)sender {
     
@@ -51,36 +54,68 @@
 {
     if(!self.barRating) return;
     
-    self.ratioGauge.value = (int)([self.barRating[@"ratio"]floatValue]*100);
-    self.atmosphereGauge.value = (int)([self.barRating[@"atmosphere"]floatValue]*100);
-    self.crowdGauge.value = (int)([self.barRating[@"crowd"]floatValue]*100);
+    self.ratioGauge.value = (int)([self.barRating[@"ratio"]floatValue]);
+    self.atmosphereGauge.value = (int)([self.barRating[@"atmosphere"]floatValue]);
+    self.crowdGauge.value = (int)([self.barRating[@"crowd"]floatValue]);
+    self.waitTimeGauge.value = (int)([self.barRating[@"wait"]floatValue]);
+    
+    self.coverImage.alpha = ([self.barRating[@"cover"]floatValue])/100;
+    //cover...
 }
 
 - (void)updateBarStats
 {
-    PFQuery *query = [PFQuery queryWithClassName:@"Rating"];
-    
-    [query whereKey:@"bar" equalTo:self.selectedBar.object];
-    
+    PFQuery *query = [PFQuery queryWithClassName:@"Bar"];
+       [query whereKey:@"name" equalTo:self.selectedBar.object[@"name"]];
+   
     // Retrieve the most recent ones
   //  [query orderByDescending:@"createdAt"];
     
     // Consider only getting some
-    [query findObjectsInBackgroundWithBlock:^(NSArray *ratings, NSError *error) {
-        // Comments now contains the last ten comments, and the "post" field
-        // has been populated. For example:
+    
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *bars, NSError *error) {
         
+        [self.selectedBar setObject:bars[0]];
+        self.barRating[@"wait"] = self.selectedBar.object[@"avgWait"];
+        self.barRating[@"crowd"] = self.selectedBar.object[@"avgCrowd"];
+        self.barRating[@"ratio"] = self.selectedBar.object[@"avgRatio"];
+        self.barRating[@"atmosphere"] = self.selectedBar.object[@"avgAtmosphere"];
+        self.barRating[@"cover"] = self.selectedBar.object[@"avgCover"];
+        
+        if([self.selectedBar.object[@"numRatings"]integerValue] == 0 )
+        {
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"No Ratings!"
+                                                           message:@"There are no ratings for this bar. Be the first to shape it!"
+                                                          delegate:self
+                                                 cancelButtonTitle:@"Ok"
+                                                 otherButtonTitles:nil];
+            [alert show];
+        }
+
+          [self updateSliders];
+        
+        /*
         if([ratings count] == 0)
         {
-            self.barRating[@"attractiveness"] = [NSNumber numberWithFloat: .5];
-            self.barRating[@"crowd"] = [NSNumber numberWithFloat: .5];
-            self.barRating[@"ratio"] = [NSNumber numberWithFloat: .5];
-            self.barRating[@"atmosphere"] = [NSNumber numberWithFloat: .5];
-            self.barRating[@"cover"] = [NSNumber numberWithFloat: .5];
+            self.refreshButton.enabled = NO;
+            self.barRating[@"wait"] = [NSNumber numberWithFloat: 50.0];
+            self.barRating[@"crowd"] = [NSNumber numberWithFloat: 50.0];
+            self.barRating[@"ratio"] = [NSNumber numberWithFloat: 50.0];
+            self.barRating[@"atmosphere"] = [NSNumber numberWithFloat: 50.0];
+            self.barRating[@"cover"] = [NSNumber numberWithFloat: 50.0];
             [self updateSliders];
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"No Ratings!"
+                                                           message:@"There are no ratings for this bar. Be the first to shape it!"
+                                                          delegate:self
+                                                 cancelButtonTitle:@"Ok"
+                                                 otherButtonTitles:nil];
+            [alert show];
+            
             return;
         }
-        
+        if (!self.refreshButton.isEnabled)
+            self.refreshButton.enabled = YES;
         
         int numRatings = 0;
         float attract = 0.0;
@@ -92,22 +127,24 @@
         for (PFObject *rating in ratings) {
             // This does not require a network access.
 
-            attract += [(NSNumber *)[rating objectForKey:@"attractiveness"] floatValue];
+            attract += [(NSNumber *)[rating objectForKey:@"wait"] floatValue];
             crowded += [(NSNumber *)[rating objectForKey:@"crowd"] floatValue];
             ratio += [(NSNumber *)[rating objectForKey:@"ratio"] floatValue];
             cover += [(NSNumber *)[rating objectForKey:@"cover"] floatValue];
             atmosphere += [(NSNumber *)[rating objectForKey:@"atmosphere"] floatValue];
             numRatings++;
         }
-        self.barRating[@"attractiveness"] = [NSNumber numberWithFloat: (attract/ (float)numRatings)];
+        self.barRating[@"wait"] = [NSNumber numberWithFloat: (attract/ (float)numRatings)];
         self.barRating[@"crowd"] = [NSNumber numberWithFloat: (crowded/ (float)numRatings)];
         self.barRating[@"ratio"] = [NSNumber numberWithFloat: (ratio/ (float)numRatings)];
         self.barRating[@"atmosphere"] = [NSNumber numberWithFloat: (atmosphere/ (float)numRatings)];
         self.barRating[@"cover"] = [NSNumber numberWithFloat:(cover/(float)numRatings)];
         
-        [self updateSliders];
-        
+      
+       */
     }];
+    
+    
     
 }
 
@@ -119,8 +156,6 @@
 
 -(void)loadGauges
 {
-    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-    
     CGRect atmosRect= CGRectMake(165,85,130,65);
     CGRect crowdRect= CGRectMake(165,163,130,65);
     CGRect ratioRect= CGRectMake(165,241,130,65);
@@ -153,15 +188,31 @@
     CGRect lineRect = CGRectMake(269, 352, 30, 28);
     CGRect nolineRect = CGRectMake(166, 352, 22, 28);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (!(screenSize.height > 480.0f))
-        {
-            //Need to figure out what adjustments need to be made
-            // ratioRect.origin.y -= 5;
-            // crowdRect.origin.y -= 5;
-            //   atmosRect.origin.y -= 25;
-            // waitRect.origin.y  -= 40;
-        }}
+    if (!IS_IPHONE_5)
+    {
+        atmosRect.origin.y -= 14;
+        atLabelRect.origin.y -= 14;
+        danceRect.origin.y -= 14;
+        beerRect.origin.y -= 14;
+        
+        
+        crowdRect.origin.y -=17;
+        crowdLabelRect.origin.y -= 17;
+        crowdedRect.origin.y -= 17;
+        nocrowdRect.origin.y -= 17;
+        
+        ratioRect.origin.y  -= 20;
+        ratioLabelRect.origin.y -= 20;
+        guyRect.origin.y -= 20;
+        girlRect.origin.y -= 20;
+        
+        waitRect.origin.y -= 23;
+        lineLabelRect.origin.y -= 23;
+        lineRect.origin.y -= 23;
+        nolineRect.origin.y -= 23;
+        
+        
+    }
     //ATMOSPHERE
     UIImageView* beerImage = [[UIImageView alloc] initWithFrame:beerRect];
     [beerImage setImage:[UIImage imageNamed:ATMOS_LOW_IMG]];
@@ -222,11 +273,11 @@
     self.waitTimeGauge = [[MSSimpleGauge alloc]initWithFrame:waitRect];
     
     
-    self.ratioGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
+    self.ratioGauge.backgroundColor = [UIColor clearColor];
     
-    self.atmosphereGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
-    self.crowdGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
-    self.waitTimeGauge.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
+    self.atmosphereGauge.backgroundColor = [UIColor clearColor];
+    self.crowdGauge.backgroundColor = [UIColor clearColor];
+    self.waitTimeGauge.backgroundColor = [UIColor clearColor];
     
     self.ratioGauge.minValue = 0;
     self.atmosphereGauge.minValue =0;
@@ -301,6 +352,8 @@
     self.barAddress.font = VYBE_FONT(15);
     self.barAddress.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
     
+    [self.coverImage setImage:[UIImage imageNamed:COVER_CAT_IMG]];
+    
     self.shapeButton.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
     self.shapeButton.tintColor = UIColorFromRGB(CONCRETE, 1);
     self.shapeButton.titleLabel.font = VYBE_FONT(23);
@@ -314,11 +367,6 @@
     self.barRating = [[NSMutableDictionary alloc]init];
     [self updateBarInfo];
     [self updateBarStats];
-    
-
-    
-    
-    
 }
 
 #pragma mark - Navigation
@@ -326,14 +374,8 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"shapeIt"]) {
-        Bar *selectedBar = self.selectedBar;
-        if ([segue.destinationViewController respondsToSelector:@selector(setSelectedBar:)])
-        {
-            [segue.destinationViewController performSelector:@selector(setSelectedBar:) withObject:selectedBar];}
-        
+        ((RateBarViewController*)segue.destinationViewController).selectedBar = self.selectedBar;
     }
-    
 }
-
 
 @end

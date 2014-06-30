@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "Bar.h"
+#import "RateBarViewController.h"
 
 @interface BarViewController : UIViewController
 @property (nonatomic, strong) Bar *selectedBar;
-
+@property (strong, nonatomic) IBOutlet UILabel *walkDistanceLabel;
+@property (strong,nonatomic) NSString* walkDistanceString;
 @end

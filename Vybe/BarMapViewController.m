@@ -34,6 +34,17 @@
     _nearbyBars = nearbyBars;
     //[self updateMapAnnotations];
 }
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.locationManager startUpdatingLocation];
+}
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.locationManager stopUpdatingLocation];
+    self.location = nil;
+}
 
 - (void)viewDidLoad
 {
@@ -78,9 +89,8 @@
 {
     if (!_location) {
         _location = location;
-        
     }
-    
+    [self updateMapAnnotations];
 }
 
 -(void)updateMapAnnotations
@@ -88,7 +98,7 @@
     [self.mapView removeAnnotations:self.mapView.annotations];
     NSMutableArray *annotations = [[NSMutableArray alloc] init];
     for (Bar *bar in self.nearbyBars) {
-        MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+        MKPointAnnotation *annotation = [[MKPointAnnotation alloc]init];
         CLLocationCoordinate2D centerCoordinate;
         centerCoordinate.latitude = bar.latitude;
         centerCoordinate.longitude = bar.longitude;
@@ -96,7 +106,6 @@
         [annotation setTitle:bar.name]; //You can set the subtitle too
         [annotations addObject:annotation];
     }
-    
     [self.mapView addAnnotations:annotations];
     [self.mapView showAnnotations:annotations animated:YES];
 

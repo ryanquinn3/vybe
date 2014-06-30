@@ -17,7 +17,7 @@
 -(void)setNearbyBars:(NSArray *)nearbyBars
 {
     _nearbyBars = nearbyBars;
-    [(BarMapViewController*) self.viewControllers[0] setNearbyBars:nearbyBars];
+    ((BarMapViewController*)self.viewControllers[0]).nearbyBars = nearbyBars;
 }
 
 - (void)viewDidLoad

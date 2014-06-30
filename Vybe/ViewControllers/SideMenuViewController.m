@@ -32,19 +32,19 @@ NSArray* cellLabels;
 -(void)setNearbyBars:(NSArray *)nearbyBars
 {
     _nearbyBars = nearbyBars;
+   
     [self updateChildrenWithBars];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    cellLabels = [[NSArray alloc] initWithObjects: @"List of bars",@"Map of bars", nil];
+    cellLabels = [[NSArray alloc] initWithObjects: @"NEARBY BARS",@"MAP", nil];
     self.lastRowSelected = 0;
-    self.nearbyBars = [[NSMutableArray alloc]init];
+    //self.nearbyBars = [[NSMutableArray alloc]init];
     
-    self.view.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.viewsTable.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
+    self.view.backgroundColor = [UIColor blackColor];
+    self.viewsTable.backgroundColor = [UIColor blackColor];
 	// Do any additional setup after loading the view.
 }
 
@@ -97,7 +97,7 @@ static NSString * CELL_IDENTIFIER = @"viewsCell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CELL_IDENTIFIER];
     }
     
-    cell.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    cell.backgroundColor = [UIColor blackColor];
     cell.textLabel.text = cellLabels[indexPath.row];
     cell.textLabel.font = VYBE_FONT(25);
     cell.textLabel.textColor = [UIColor whiteColor];

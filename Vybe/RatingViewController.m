@@ -52,6 +52,8 @@
     self.circularSlider.minimumValue = 0;
     self.circularSlider.maximumValue = 100;
     
+    self.circularSlider.value = [[self.labelDictionary objectForKey:@"currentValue"]floatValue];
+    [self sliderChanged];
     
     [self.circularSlider addTarget:self action:@selector(sliderChanged) forControlEvents:UIControlEventValueChanged];
 	// Do any additional setup after loading the view.
@@ -60,11 +62,6 @@
     if(category!= nil)
     {
         [self.categoryLabel setText:category];
-    }
-    NSString* catMinString = [self.labelDictionary objectForKey:@"minCategoryLabel"];
-    if(catMinString !=nil)
-    {
-        [self.categoryStatusLabel setText:catMinString];
     }
 }
 

@@ -23,9 +23,9 @@
     
     
     
-    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT(23),NSFontAttributeName,nil]];
+    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT_LT(25),NSFontAttributeName,nil]];
     
-    [[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT(23),NSFontAttributeName,nil] forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:UIColorFromRGB(CONCRETE, 1),NSForegroundColorAttributeName,VYBE_FONT_LT(20),NSFontAttributeName,nil] forState:UIControlStateNormal];
     
     
     UIStoryboard* mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -35,7 +35,8 @@
     
     [sideMenuView setViewControllers:[[NSArray alloc] initWithObjects:listView,[mainStoryboard instantiateViewControllerWithIdentifier:@"BMNC"], nil]];
     
-    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
     
     ICSDrawerController *drawer = [[ICSDrawerController alloc]initWithLeftViewController:sideMenuView centerViewController:listView];

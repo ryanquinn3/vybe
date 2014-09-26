@@ -15,367 +15,543 @@
 #import <Parse/Parse.h>
 
 
+
+#define SPACE_OFFSET 10
 @interface BarViewController ()
-@property (weak, nonatomic) IBOutlet UILabel *barTitle;
-
-@property (weak, nonatomic) IBOutlet UILabel *barAddress;
-
-@property (strong, nonatomic) NSMutableDictionary* barRating;
-
-@property (strong,nonatomic) MSSimpleGauge* ratioGauge;
-@property (strong,nonatomic) MSSimpleGauge* atmosphereGauge;
-@property (strong,nonatomic) MSSimpleGauge* crowdGauge;
-@property (strong,nonatomic) MSSimpleGauge* waitTimeGauge;
-
-@property (strong, nonatomic) IBOutlet UIButton *shapeButton;
-
+@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *refreshButton;
-
-@property (strong, nonatomic) IBOutlet UIImageView *coverImage;
-
+@property(strong,nonatomic) UILabel* barTitle;
+@property(strong,nonatomic) UILabel* barAddress;
+@property(strong,nonatomic) UILabel* walkDistanceLabel;
+@property (strong,nonatomic) UIButton* submitHashtagButton;
 
 @end
 
 
+#define UPVOTED_BG UIColorFromRGB(CONCRETE, 1)
+#define UPVOTED_TX UIColorFromRGB(0, .9)
+
+#define DWNVOTED_BG UIColorFromRGB(0, .9)
+#define DWNVOTED_TX UIColorFromRGB(0xffffff, .15)
 
 @implementation BarViewController
 
+float contentSize;
+NSArray* sortedHashtagList;
+bool shouldHideSubmitButton;
+
 - (void)updateBarInfo
 {
-    self.barTitle.text = self.selectedBar.name;
-    self.barAddress.text = self.selectedBar.address;
-    self.walkDistanceLabel.text = self.walkDistanceString;
-   }
+    self.barTitle.text = self.selectedBar[@"bar"][@"name"];
+    self.barAddress.text = self.selectedBar[@"bar"][@"address"];
+}
 - (IBAction)refreshPressed:(id)sender {
     
-    [self updateBarStats];
-}
--(void)updateSliders
-{
-    if(!self.barRating) return;
-    
-    self.ratioGauge.value = (int)([self.barRating[@"ratio"]floatValue]);
-    self.atmosphereGauge.value = (int)([self.barRating[@"atmosphere"]floatValue]);
-    self.crowdGauge.value = (int)([self.barRating[@"crowd"]floatValue]);
-    self.waitTimeGauge.value = (int)([self.barRating[@"wait"]floatValue]);
-    
-    self.coverImage.alpha = ([self.barRating[@"cover"]floatValue])/100;
-    //cover...
-}
-
-- (void)updateBarStats
-{
-    PFQuery *query = [PFQuery queryWithClassName:@"Bar"];
-       [query whereKey:@"name" equalTo:self.selectedBar.object[@"name"]];
-   
-    // Retrieve the most recent ones
-  //  [query orderByDescending:@"createdAt"];
-    
-    // Consider only getting some
-    
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *bars, NSError *error) {
-        
-        [self.selectedBar setObject:bars[0]];
-        self.barRating[@"wait"] = self.selectedBar.object[@"avgWait"];
-        self.barRating[@"crowd"] = self.selectedBar.object[@"avgCrowd"];
-        self.barRating[@"ratio"] = self.selectedBar.object[@"avgRatio"];
-        self.barRating[@"atmosphere"] = self.selectedBar.object[@"avgAtmosphere"];
-        self.barRating[@"cover"] = self.selectedBar.object[@"avgCover"];
-        
-        if([self.selectedBar.object[@"numRatings"]integerValue] == 0 )
-        {
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"No Ratings!"
-                                                           message:@"There are no ratings for this bar. Be the first to shape it!"
-                                                          delegate:self
-                                                 cancelButtonTitle:@"Ok"
-                                                 otherButtonTitles:nil];
-            [alert show];
-        }
-
-          [self updateSliders];
-        
-        /*
-        if([ratings count] == 0)
-        {
-            self.refreshButton.enabled = NO;
-            self.barRating[@"wait"] = [NSNumber numberWithFloat: 50.0];
-            self.barRating[@"crowd"] = [NSNumber numberWithFloat: 50.0];
-            self.barRating[@"ratio"] = [NSNumber numberWithFloat: 50.0];
-            self.barRating[@"atmosphere"] = [NSNumber numberWithFloat: 50.0];
-            self.barRating[@"cover"] = [NSNumber numberWithFloat: 50.0];
-            [self updateSliders];
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"No Ratings!"
-                                                           message:@"There are no ratings for this bar. Be the first to shape it!"
-                                                          delegate:self
-                                                 cancelButtonTitle:@"Ok"
-                                                 otherButtonTitles:nil];
-            [alert show];
-            
-            return;
-        }
-        if (!self.refreshButton.isEnabled)
-            self.refreshButton.enabled = YES;
-        
-        int numRatings = 0;
-        float attract = 0.0;
-        float crowded = 0.0;
-        float ratio = 0.0;
-        float cover = 0.0;
-        float atmosphere = 0.0;
-        
-        for (PFObject *rating in ratings) {
-            // This does not require a network access.
-
-            attract += [(NSNumber *)[rating objectForKey:@"wait"] floatValue];
-            crowded += [(NSNumber *)[rating objectForKey:@"crowd"] floatValue];
-            ratio += [(NSNumber *)[rating objectForKey:@"ratio"] floatValue];
-            cover += [(NSNumber *)[rating objectForKey:@"cover"] floatValue];
-            atmosphere += [(NSNumber *)[rating objectForKey:@"atmosphere"] floatValue];
-            numRatings++;
-        }
-        self.barRating[@"wait"] = [NSNumber numberWithFloat: (attract/ (float)numRatings)];
-        self.barRating[@"crowd"] = [NSNumber numberWithFloat: (crowded/ (float)numRatings)];
-        self.barRating[@"ratio"] = [NSNumber numberWithFloat: (ratio/ (float)numRatings)];
-        self.barRating[@"atmosphere"] = [NSNumber numberWithFloat: (atmosphere/ (float)numRatings)];
-        self.barRating[@"cover"] = [NSNumber numberWithFloat:(cover/(float)numRatings)];
-        
-      
-       */
-    }];
-    
-    
+    [self updateRatingsFromParse];
     
 }
 
-//- (void)viewWillAppear:(BOOL)animated
-//{
-//    [self updateBarInfo];
-//}
 
+-(void)clearAndReloadViews{
+    
+    [self.scrollView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    sortedHashtagList = [self sortedHashTags:self.selectedBar];
+    contentSize = 0.0;
+    [self initTextSection];
+    //Update bar stats was here
+    [self initTypicalSection];
+    [self initCurrentSection];
+    [self addSubmitNewHashTag];
+    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+15)];
+    
+    
 
--(void)loadGauges
+}
+
+-(void)initTextSection
 {
-    CGRect atmosRect= CGRectMake(165,85,130,65);
-    CGRect crowdRect= CGRectMake(165,163,130,65);
-    CGRect ratioRect= CGRectMake(165,241,130,65);
-    CGRect waitRect = CGRectMake(165,319,130,65);
+    CGRect barTitleRect = CGRectMake(5,5,290,30);
+    CGRect barAddressRect = CGRectMake(5,28,290,24);
+    
+    self.barTitle = [[UILabel alloc]initWithFrame:barTitleRect];
+    self.barAddress = [[UILabel alloc] initWithFrame:barAddressRect];
+    
+    [self updateBarInfo];
+    
+    //Will need to adjust for length here
+    self.barTitle.font = VYBE_FONT_LT(24);
+    if(self.barAddress.text.length > 30)
+        self.barAddress.font = VYBE_FONT_LT(14);
+    else
+        self.barAddress.font = VYBE_FONT_LT(18);
+    
+    self.barTitle.textColor = self.barAddress.textColor = WHITE;
+    self.barTitle.shadowColor = self.barAddress.shadowColor = WHITE;
+    self.barTitle.shadowOffset = self.barAddress.shadowOffset = CGSizeMake(0,1.0);
+    self.barTitle.textAlignment = self.barAddress.textAlignment = NSTextAlignmentCenter;
+
+    UIView* textBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(15, 20, 290, 130)];
+    
+    textBackgroundView.backgroundColor = UIColorFromRGB(0, .7);
+    textBackgroundView.layer.cornerRadius = 5;
+    textBackgroundView.layer.masksToBounds = YES;
+    [textBackgroundView addSubview:self.barTitle];
+    [textBackgroundView addSubview:self.barAddress];
+    
+    UIImageView* barTypeImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 168)];
+    NSString* venueType = self.selectedBar[@"bar"][@"venueType"];
+    barTypeImage.image = [UIImage imageNamed:[self imageNameForBarType:venueType]];
+    
+    [self.scrollView addSubview:barTypeImage];
+    [self.scrollView addSubview:textBackgroundView];
+    
+    contentSize += barTypeImage.bounds.size.height;
+    
+    UIView* dividerView = [[UIView alloc]initWithFrame:CGRectMake(10, contentSize, 300, 2)];
+    [dividerView setBackgroundColor:UIColorFromRGB(0xFFFFFF, .4)];
+    dividerView.layer.cornerRadius = 1;
+    [self.scrollView addSubview:dividerView];
+    
+}
+
+
+-(void)initTypicalSection
+{
+    
+    //NSArray* typicalHashTags = [NSArray arrayWithObjects:@"crowded",@"young",@"dancing",nil];
+    NSString* barId = ((PFObject*)self.selectedBar[@"bar"]).objectId;
+    NSDictionary* topMap = [[NSUserDefaults standardUserDefaults]objectForKey:@"topHashtagsForBars"];
+    NSArray* thisMap = [topMap objectForKey:barId];
     
     
-    //Atmosphere Images & Label
-    CGRect atLabelRect = CGRectMake(15, 94, 130, 40);
-    CGRect danceRect = CGRectMake(270, 115, 32, 30);
-    CGRect beerRect = CGRectMake(160, 115, 35, 30);
+    NSMutableArray* typicalHashTags = [[NSMutableArray alloc]init];
     
-    
-    //Crowd Images & Label
-    CGRect crowdLabelRect = CGRectMake(15, 175, 130, 40);
-    CGRect crowdedRect = CGRectMake(270, 190, 33,30);
-    CGRect nocrowdRect = CGRectMake(160, 190, 33,30);
-    
+    for(NSDictionary* entry in thisMap){
+        [typicalHashTags addObject:entry[@"hashtag"]];
+    }
+    if([typicalHashTags count] == 0){
+        [typicalHashTags addObject:@" "];
+    }
     
     
     
-    //Ratio Images & Label
-    CGRect ratioLabelRect = CGRectMake(15, 254, 150, 40);
-    CGRect guyRect = CGRectMake(160, 270, 27, 35);
-    CGRect girlRect = CGRectMake(268, 270, 30, 35);
+    NSString* trendingHeader = @"Typical Vybes";
+    UIView* trendingSection = [self hashTagSection:CGPointMake(0, 70) withHashTags:typicalHashTags andTitle:trendingHeader];
+    [self.scrollView addSubview:trendingSection];
+}
+
+-(void)initCurrentSection
+{
+    
+    UILabel* currentVybeLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, contentSize+SPACE_OFFSET, 290, 30)];
+    currentVybeLabel.font = VYBE_FONT(20);
+    currentVybeLabel.textColor = UIColorFromRGB(CONCRETE, .9);
+    currentVybeLabel.text = @"Tonight's vybes";
+    
+    [self.scrollView addSubview:currentVybeLabel];
+    contentSize += currentVybeLabel.bounds.size.height;
+    
+    NSArray* currentHashTags = [self sortedHashTags:self.selectedBar];
     
     
+    for (NSString* hashTag in currentHashTags) {
+
+        CGRect hashtagRect = CGRectMake(15, contentSize +SPACE_OFFSET, 290, 40);
+        [self.scrollView addSubview:[self hashtagRow:hashtagRect withHashTag:[@"#" stringByAppendingString:hashTag]]];
+        contentSize += hashtagRect.size.height+SPACE_OFFSET;
+    }
+}
+
+
+-(UIView*)hashTagSection:(CGPoint)origin withHashTags:(NSArray*)hashTags andTitle:(NSString*)title
+{
     
-    //Entry Line Images & Label
-    CGRect lineLabelRect = CGRectMake(15, 334, 130, 40);
-    CGRect lineRect = CGRectMake(269, 352, 30, 28);
-    CGRect nolineRect = CGRectMake(166, 352, 22, 28);
     
-    if (!IS_IPHONE_5)
+    UILabel* heading = [[UILabel alloc] initWithFrame:CGRectMake(25,0, 270, 30)];
+    heading.text = title;
+    heading.font = VYBE_FONT(16);
+    heading.textColor = WHITE;
+    
+    float labelHeight = 30.0;
+    int numRows = (int)((hashTags.count-1) / 3) + 1;
+    
+    float bgViewHeight = (labelHeight * numRows) + 10;
+    
+    UIView* hashTagBGView = [[UIView alloc] initWithFrame:CGRectMake(25,27,270,bgViewHeight)];
+    hashTagBGView.layer.borderColor = UIColorFromRGB(0xffffff, .4).CGColor;
+    hashTagBGView.layer.borderWidth = 2.0;
+    hashTagBGView.layer.cornerRadius = 15;
+    hashTagBGView.layer.masksToBounds = YES;
+    
+    UILabel* hashLabel;
+    float labelWidth = hashTagBGView.bounds.size.width / 3;
+    
+    for(int i = 0; i < hashTags.count; i++)
     {
-        atmosRect.origin.y -= 14;
-        atLabelRect.origin.y -= 14;
-        danceRect.origin.y -= 14;
-        beerRect.origin.y -= 14;
+        int row = (i / 3);
         
-        
-        crowdRect.origin.y -=17;
-        crowdLabelRect.origin.y -= 17;
-        crowdedRect.origin.y -= 17;
-        nocrowdRect.origin.y -= 17;
-        
-        ratioRect.origin.y  -= 20;
-        ratioLabelRect.origin.y -= 20;
-        guyRect.origin.y -= 20;
-        girlRect.origin.y -= 20;
-        
-        waitRect.origin.y -= 23;
-        lineLabelRect.origin.y -= 23;
-        lineRect.origin.y -= 23;
-        nolineRect.origin.y -= 23;
+        hashLabel = [[UILabel alloc] initWithFrame:CGRectMake(i*labelWidth, 5+(labelHeight * row), labelWidth, labelHeight)];
+        hashLabel.font = VYBE_FONT_LT(18);
+        hashLabel.textColor = [UIColor whiteColor];
+        hashLabel.shadowColor = [UIColor whiteColor];
+        hashLabel.shadowOffset = CGSizeMake(0, 1.0);
+        hashLabel.text = [@"#" stringByAppendingString:hashTags[i]];
+        hashLabel.textAlignment = NSTextAlignmentCenter;
+        hashLabel.adjustsFontSizeToFitWidth = YES;
+        [hashTagBGView addSubview:hashLabel];
         
         
     }
-    //ATMOSPHERE
-    UIImageView* beerImage = [[UIImageView alloc] initWithFrame:beerRect];
-    [beerImage setImage:[UIImage imageNamed:ATMOS_LOW_IMG]];
     
-    UIImageView* danceImage = [[UIImageView alloc] initWithFrame:danceRect];
-    [danceImage setImage:[UIImage imageNamed:ATMOS_HIGH_IMG]];
+    float sectionHeight = heading.frame.size.height + bgViewHeight + 5;
     
-    UILabel* atmosphereLabel = [[UILabel alloc]initWithFrame:atLabelRect];
-    atmosphereLabel.font = VYBE_FONT(28);
-    atmosphereLabel.text = @"atmosphere";
-    atmosphereLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    CGRect sectionRect = CGRectMake(origin.x, origin.y, 320, sectionHeight);
+    UIView* sectionView = [[UIView alloc]initWithFrame:sectionRect];
+    [sectionView addSubview:heading];
+    [sectionView addSubview: hashTagBGView];
     
-    //CROWD
-    UILabel* crowdLabel = [[UILabel alloc]initWithFrame:crowdLabelRect];
-    crowdLabel.font = VYBE_FONT(28);
-    crowdLabel.text = @"crowdedness";
-    crowdLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
-    UIImageView* nocrowdImage = [[UIImageView alloc]initWithFrame:nocrowdRect];
-    [nocrowdImage setImage:[UIImage imageNamed:CROWD_LOW_IMG]];
-    
-    
-    UIImageView* crowdedImage = [[UIImageView alloc]initWithFrame:crowdedRect];
-    [crowdedImage setImage:[UIImage imageNamed:CROWD_HIGH_IMG]];
-    
-    
-    //RATIO
-    UILabel* ratioLabel = [[UILabel alloc]initWithFrame:ratioLabelRect];
-    ratioLabel.font = VYBE_FONT(28);
-    ratioLabel.text = @"girl-guy ratio";
-    ratioLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
-    UIImageView* guyImage = [[UIImageView alloc]initWithFrame:guyRect];
-    [guyImage setImage:[UIImage imageNamed:RATIO_LOW_IMG]];
-    
-    UIImageView* girlImage = [[UIImageView alloc]initWithFrame:girlRect];
-    [girlImage setImage:[UIImage imageNamed:RATIO_HIGH_IMG]];
-    
-    
-    //Entry Line
-    UILabel* waitLabel = [[UILabel alloc]initWithFrame:lineLabelRect];
-    waitLabel.font = VYBE_FONT(28);
-    waitLabel.text = @"entry line";
-    waitLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
-    UIImageView* lineImage = [[UIImageView alloc]initWithFrame:lineRect];
-    [lineImage setImage:[UIImage imageNamed:WAIT_HIGH_IMG]];
-    
-    UIImageView* nolineImage = [[UIImageView alloc]initWithFrame:nolineRect];
-    [nolineImage setImage:[UIImage imageNamed:WAIT_LOW_IMG]];
-
-    
-
-
-    self.ratioGauge = [[MSSimpleGauge alloc]initWithFrame:ratioRect];
-    self.atmosphereGauge = [[MSSimpleGauge alloc]initWithFrame:atmosRect];
-    self.crowdGauge = [[MSSimpleGauge alloc]initWithFrame:crowdRect];
-    self.waitTimeGauge = [[MSSimpleGauge alloc]initWithFrame:waitRect];
-    
-    
-    self.ratioGauge.backgroundColor = [UIColor clearColor];
-    
-    self.atmosphereGauge.backgroundColor = [UIColor clearColor];
-    self.crowdGauge.backgroundColor = [UIColor clearColor];
-    self.waitTimeGauge.backgroundColor = [UIColor clearColor];
-    
-    self.ratioGauge.minValue = 0;
-    self.atmosphereGauge.minValue =0;
-    self.crowdGauge.minValue = 0;
-    self.waitTimeGauge.minValue = 0;
-    
-    self.ratioGauge.maxValue = 100;
-    
-    self.atmosphereGauge.maxValue = 100;
-    self.crowdGauge.maxValue = 100;
-    self.waitTimeGauge.maxValue = 100;
-    
-    self.ratioGauge.fillArcFillColor = UIColorFromRGB(CLOUDS, 1);
-    self.ratioGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS, 1);
-    
-    self.ratioGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS, 1);
-    self.ratioGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE, 1);
-
-    self.atmosphereGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS, 1);
-    self.atmosphereGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE, 1);
-
-    self.atmosphereGauge.fillArcFillColor = UIColorFromRGB(CLOUDS, 1);
-    self.atmosphereGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS, 1);
-    
-    self.crowdGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS,1);
-    self.crowdGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE,1);
-
-    self.crowdGauge.fillArcFillColor = UIColorFromRGB(CLOUDS,1);
-    self.crowdGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS,1);
-
-    self.waitTimeGauge.backgroundArcFillColor = UIColorFromRGB(CLOUDS,1);
-    self.waitTimeGauge.backgroundArcStrokeColor = UIColorFromRGB(CONCRETE,1);
-    
-    self.waitTimeGauge.fillArcFillColor = UIColorFromRGB(CLOUDS,1);
-    self.waitTimeGauge.fillArcStrokeColor = UIColorFromRGB(CLOUDS,1);
-    
-    
-    self.ratioGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
-    self.atmosphereGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
-    self.waitTimeGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
-    self.crowdGauge.needleView.needleColor = UIColorFromRGB(MIDNIGHT_BLUE,1);
-
-
-    [self.view addSubview:self.ratioGauge];
-    [self.view addSubview:self.atmosphereGauge];
-    [self.view addSubview:self.crowdGauge];
-    [self.view addSubview:self.waitTimeGauge];
-    [self.view addSubview:atmosphereLabel];
-    [self.view addSubview:beerImage];
-    [self.view addSubview:danceImage];
-    [self.view addSubview:crowdLabel];
-    [self.view addSubview:ratioLabel];
-    [self.view addSubview:waitLabel];
-    [self.view addSubview:guyImage];
-    [self.view addSubview:girlImage];
-    [self.view addSubview:lineImage];
-    [self.view addSubview:nolineImage];
-    [self.view addSubview:crowdedImage];
-    [self.view addSubview:nocrowdImage];
-    
-    
+    return sectionView;
 }
+
+
+-(UIView*)hashtagRow:(CGRect)rect withHashTag:(NSString*)hashTag
+{
+    
+    UIView* hashtagBackground = [[UIView alloc]initWithFrame:rect];
+    hashtagBackground.backgroundColor = UIColorFromRGB(0xFFFFFF, .1);
+    hashtagBackground.layer.cornerRadius = 15.0;
+    hashtagBackground.layer.masksToBounds = YES;
+    hashtagBackground.layer.borderColor = UIColorFromRGB(0xFFFFFF, .4).CGColor;
+    hashtagBackground.layer.borderWidth = 1.0f;
+    
+    UILabel* hashtagLabel = [[UILabel alloc]initWithFrame:CGRectMake(SPACE_OFFSET, 0, rect.size.width-SPACE_OFFSET, rect.size.height)];
+    
+    //adjust for string length
+    if(hashTag.length > 10)
+        hashtagLabel.font = VYBE_FONT(19);
+    else
+        hashtagLabel.font = VYBE_FONT(22);
+    hashtagLabel.textColor = WHITE;
+    hashtagLabel.text = hashTag;
+    
+    [hashtagLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    [hashtagBackground addSubview:hashtagLabel];
+   
+    UISwipeGestureRecognizer* swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedRight:)];
+    [swipeRight setDirection:UISwipeGestureRecognizerDirectionRight];
+    UISwipeGestureRecognizer* swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedLeft:)];
+    [swipeLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+    
+    //If user! logged in || not at a bar || already rated this
+
+    NSNumber* value = [self scoreFromUserForHashtag:[hashTag substringFromIndex:1]];
+    if([value intValue] == 0 && [PFUser currentUser])
+    {
+        [hashtagBackground addGestureRecognizer:swipeLeft];
+        [hashtagBackground addGestureRecognizer:swipeRight];
+        
+    }else if([value intValue] == -1){
+        [self setUIView:hashtagBackground
+                bgColor:DWNVOTED_BG
+              textColor:DWNVOTED_TX
+                animate:NO];
+    }else{
+        [self setUIView:hashtagBackground
+                bgColor:UPVOTED_BG
+              textColor:UPVOTED_TX
+                animate:NO];
+    }
+    
+
+    return hashtagBackground;
+}
+
+
+
+-(void)addSubmitNewHashTag
+{
+    
+    if(![self checkTimeOfLastSubmission] || ![PFUser currentUser])
+        return;
+    
+    UIView* bgView = [[UIView alloc]initWithFrame:CGRectMake(15, contentSize+SPACE_OFFSET, 290, 30)];
+    UIButton* newReportButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    NSString* submitHashtagString = @"Doesn't quite cut it? Tell us how it is!";
+    int fontSize = 16;
+    if(sortedHashtagList.count == 0 ){
+        submitHashtagString = @"No hashtags have been submitted yet. Be the first!";
+        fontSize = 12;
+    }
+    [newReportButton.titleLabel setFont:VYBE_FONT(fontSize)];
+    [newReportButton setTitle:submitHashtagString forState:UIControlStateNormal];
+    [newReportButton sizeToFit];
+    [newReportButton setTitleColor:WHITE forState:UIControlStateNormal];
+    [newReportButton setCenter:bgView.center];
+    [newReportButton setTitleShadowColor:UIColorFromRGB(CONCRETE, 1) forState:UIControlStateNormal];
+    
+    [newReportButton addTarget:self action:@selector(segueToUserReview) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.scrollView addSubview:newReportButton];
+    self.submitHashtagButton = newReportButton;
+    contentSize += bgView.bounds.size.height + SPACE_OFFSET;
+}
+
+-(BOOL)checkTimeOfLastSubmission{
+    
+    NSString* barId = ((PFObject*)self.selectedBar[@"bar"]).objectId;
+    NSDate* lastSubmission = [[NSUserDefaults standardUserDefaults] objectForKey:barId];
+    if(!lastSubmission){
+        return YES;
+    }
+    
+    NSTimeInterval timeSinceLast = [[NSDate date] timeIntervalSinceDate:lastSubmission];
+    
+    if(timeSinceLast / 3600.0 > 12)
+    {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:barId];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return YES;
+    }
+    
+    return NO;
+}
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = UIColorFromRGB(0x95a5a6, 1);
-    [self loadGauges];
-    self.barTitle.font = VYBE_FONT(35);
-    self.barTitle.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
     
-    self.barAddress.font = VYBE_FONT(15);
-    self.barAddress.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
+    self.submittedHashtags = [[NSMutableArray alloc]init];
+    sortedHashtagList = [self sortedHashTags:self.selectedBar];
     
-    [self.coverImage setImage:[UIImage imageNamed:COVER_CAT_IMG]];
-    
-    self.shapeButton.backgroundColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    self.shapeButton.tintColor = UIColorFromRGB(CONCRETE, 1);
-    self.shapeButton.titleLabel.font = VYBE_FONT(23);
-    self.shapeButton.titleLabel.textColor = UIColorFromRGB(CONCRETE, 1);
-    
-    self.walkDistanceLabel.font = VYBE_FONT(20);
-    self.walkDistanceLabel.textColor = UIColorFromRGB(MIDNIGHT_BLUE, 1);
-    
+    contentSize = 0.0;
+    [self initTextSection];
+    //Update bar stats was here
+    [self initTypicalSection];
+    [self initCurrentSection];
+    [self addSubmitNewHashTag];
+    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+15)];
 
-	// Do any additional setup after loading the view.
-    self.barRating = [[NSMutableDictionary alloc]init];
-    [self updateBarInfo];
-    [self updateBarStats];
 }
 
-#pragma mark - Navigation
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+#define IDENTIFIER @"httvc"
+-(void)segueToUserReview
 {
-    if ([segue.identifier isEqualToString:@"shapeIt"]) {
-        ((RateBarViewController*)segue.destinationViewController).selectedBar = self.selectedBar;
+    [self performSegueWithIdentifier:@"tohashtaglist" sender:self];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([[segue identifier] isEqualToString:@"tohashtaglist"]){
+        HashtagTableViewController* httVC = (HashtagTableViewController*)[segue destinationViewController];
+        [httVC setCaller:self];
+        [httVC setBarId:((PFObject*)self.selectedBar[@"bar"]).objectId];
     }
 }
+
+
+//Make into dictionary globally?
+-(NSString*) imageNameForBarType:(NSString*) venueType
+{
+    NSString* imageTitle;
+    if([venueType isEqualToString:@"sports bar"]){
+        imageTitle = @"sports-bar.jpg";
+    }
+    else if([venueType isEqualToString:@"dive bar"]){
+        imageTitle = @"dive-bar.jpg";
+    }
+    else if([venueType isEqualToString:@"pub"]){
+        imageTitle = @"pub.jpg";
+    }
+    else if([venueType isEqualToString:@"tap room"]){
+        imageTitle = @"tap-room.jpg";
+    }
+    else{
+        imageTitle = @"nightclub.jpg";
+    }
+    
+    return imageTitle;
+}
+
+-(void)swipedRight:(UISwipeGestureRecognizer* )recognizer
+{
+    [self setUIView:[recognizer view]
+            bgColor:UPVOTED_BG
+          textColor:UPVOTED_TX
+            animate:YES];
+    
+    
+    for(UIView* subs in [[recognizer view]subviews])
+    {
+        if([subs isKindOfClass:[UILabel class]])
+        {
+            NSString* hashtag = [((UILabel*)subs).text substringFromIndex:1];
+            [self submitNewRating:hashtag withScore:1];
+        }
+    }
+    //[[recognizer view] removeGestureRecognizer:recognizer];
+    
+    
+    
+    
+}
+-(void)swipedLeft:(UISwipeGestureRecognizer* )recognizer
+{
+    [self setUIView:[recognizer view]
+            bgColor:DWNVOTED_BG
+          textColor:DWNVOTED_TX
+            animate:YES];
+    
+    for(UIView* subs in [[recognizer view]subviews])
+    {
+        if([subs isKindOfClass:[UILabel class]])
+        {
+            NSString* hashtag = [((UILabel*)subs).text substringFromIndex:1];
+            [self submitNewRating:hashtag withScore:-1];
+        }
+    }
+    //[[recognizer view] removeGestureRecognizer:recognizer];
+}
+
+
+
+-(void)submitNewRating:(NSString*)hashtag withScore:(int)score
+{
+    NSArray* ratings = [self.selectedBar objectForKey:@"ratings"];
+    NSString* barid = ((PFObject*)self.selectedBar[@"bar"]).objectId;
+    
+    NSString* htId;
+    for(NSDictionary* rating in ratings){
+        if([rating[@"hashtag"] isEqualToString:hashtag]){
+            htId = rating[@"hashtagId"];
+            break;
+        }
+    }
+    if(!htId){
+        NSLog(@"Hashtag wasn't found when searching list, SubmitNewRating BVC");
+        return;
+    }
+    
+    PFObject* newRating = [PFObject objectWithClassName:@"Rating"];
+    newRating[@"user"] = [PFUser currentUser];
+    newRating[@"bar"] = [PFObject objectWithoutDataWithClassName:@"Bar" objectId:barid];
+    newRating[@"hashtag"] = [PFObject objectWithoutDataWithClassName:@"Hashtag" objectId:barid];
+    newRating[@"score"] = [NSNumber numberWithInt:score];
+    
+    [newRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+       if(succeeded)
+       {
+           [self updateRatingsFromParse];
+       }
+       else{
+           NSLog(@"Error saving new rating %@", [error userInfo]);
+       }
+    }];
+    
+    
+}
+
+
+
+-(void)setUIView:(UIView*)view bgColor:(UIColor*)bg textColor:(UIColor*)text animate:(BOOL)animated
+{
+    if(animated){
+        [UIView animateWithDuration:1.0 animations:^{
+            [view setBackgroundColor:bg];
+            for(UIView* subview in [view subviews])
+            {
+                if([subview isKindOfClass:[UILabel class]])
+                {
+                    UILabel* lbl = (UILabel*)subview;
+                    [lbl setTextColor: text];
+                }
+            }
+        }];
+    }else{
+        [view setBackgroundColor:bg];
+        for(UIView* subview in [view subviews])
+        {
+            if([subview isKindOfClass:[UILabel class]])
+            {
+                UILabel* lbl = (UILabel*)subview;
+                [lbl setTextColor: text];
+            }
+        }
+    }
+}
+
+-(void)returnFromHashtagSelect
+{
+    if([self.submittedHashtags count]){
+        [self.submitHashtagButton setHidden:YES];
+    }
+}
+
+-(NSArray*)sortedHashTags:(NSDictionary*) barDict{
+    NSArray* ratings = [barDict objectForKey:@"ratings"];
+    NSMutableDictionary* hashtagValues = [[NSMutableDictionary alloc]init];
+    
+    for(NSDictionary* rating in ratings){
+        NSNumber* value;
+        NSNumber* htValue = [hashtagValues objectForKey:rating[@"hashtag"]];
+        if(htValue){
+            value = [NSNumber numberWithInt:[htValue intValue] + [rating[@"score"] intValue]];
+        }
+        else{
+            value = [NSNumber numberWithInt:[rating[@"score"]intValue]];
+        }
+        [hashtagValues setObject:value forKey:rating[@"hashtag"]];
+    }
+    NSArray* sortedKeys = [hashtagValues keysSortedByValueUsingComparator: ^(id obj1, id obj2) {
+        
+        if ([obj1 integerValue] > [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if ([obj1 integerValue] < [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    
+    return sortedKeys;
+
+}
+
+-(void)updateRatingsFromParse
+{
+    NSString* barId = ((PFObject*)self.selectedBar[@"bar"]).objectId;
+    [PFCloud callFunctionInBackground:@"getRatings" withParameters:@{@"bar":barId} block:^(id object, NSError *error)
+    {
+            if(!error){
+                NSArray* ratings = (NSArray*)object;
+                [self.selectedBar setObject:ratings forKey:@"ratings"];
+                [self clearAndReloadViews];
+            }else{
+                NSLog(@"%@",[error userInfo]);
+            }
+        
+                                    
+    }];
+}
+
+-(NSNumber*)scoreFromUserForHashtag:(NSString*)hashtag
+{
+    NSArray* ratings = self.selectedBar[@"ratings"];
+    for(NSDictionary* rating in ratings)
+    {
+        if([rating[@"hashtag"] isEqualToString:hashtag] && [rating[@"user"] isEqualToString: [PFUser currentUser].objectId])
+        {
+           
+            return rating[@"score"];
+        }
+    }
+    
+    return [NSNumber numberWithInt:0];
+}
+
+
+
+
 
 @end

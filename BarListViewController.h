@@ -22,6 +22,7 @@
 @interface BarListViewController : UIViewController <ICSDrawerControllerChild, ICSDrawerControllerPresenting,UITableViewDelegate,UITableViewDataSource>
 @property (nonatomic,weak) ICSDrawerController* drawer;
 @property (strong,nonatomic) NSArray* nearbyBars;
+@property (strong,nonatomic) NSDictionary* barData;
 -(void) setNearbyBars:(NSArray *)nearbyBars;
 -(void) presentSignUpViewController;
 @end

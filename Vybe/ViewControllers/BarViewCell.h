@@ -11,13 +11,11 @@
 
 @interface BarViewCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UILabel *barNameLabel;
+
 @property (strong, nonatomic) IBOutlet UILabel *distanceLabel;
-@property (strong, nonatomic) IBOutlet UIImageView *leftIconImageView;
-@property (strong, nonatomic) IBOutlet UIImageView *rightIconImageView;
+
+@property (strong, nonatomic) UIView* infoBackgroundView;
 
 
--(void)setVisibility:(BOOL)images andDistanceLabel:(BOOL)label;
--(void)setLeftImage:(NSString*)leftImageName andRight:(NSString*)rightImageName;
--(void)setOpacityofLeftImage:(CGFloat)leftOpacity andRight:(CGFloat)rightOpacity;
-
+-(void)setinfoBackgroundViewHeight:(int)height;
 @end

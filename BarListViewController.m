@@ -12,7 +12,6 @@
 
 @interface BarListViewController () <CLLocationManagerDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
-@property (strong, nonatomic) UISegmentedControl* filterControl;
 @property (strong,nonatomic) CLLocationManager* locationManager;
 @property (strong, nonatomic) CLLocation* location;
 @property (strong, nonatomic) NSIndexPath* selectedRow;
@@ -26,11 +25,17 @@ Bar* selectedBar;
 
 BarListStatus currentDisplayedCategory;
 
+NSMutableDictionary* barHashtagMap;
+NSMutableDictionary* barTopHashtagMap;
+UIActivityIndicatorView* indicator;
+
+
+
 -(void)setNearbyBars:(NSArray *)nearbyBars
 {
     _nearbyBars = nearbyBars;
     [self.tableView reloadData];
-    [((ListNavViewController *)self.navigationController) setNearbyBars:nearbyBars];
+    //[((ListNavViewController *)self.navigationController) setNearbyBars:nearbyBars];
 }
 - (IBAction)liPressed:(id)sender {
     
@@ -53,17 +58,11 @@ BarListStatus currentDisplayedCategory;
     return _locationManager;
 }
 
-
-
--(void)segmentChanged
-{
-    currentDisplayedCategory = self.filterControl.selectedSegmentIndex;
-    [self.tableView reloadData];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    barHashtagMap = [[NSMutableDictionary alloc]init];
+    barTopHashtagMap = [[NSMutableDictionary alloc]init];
     self.transitionController = [[TransitionDelegate alloc] init];
     [self.locationManager startUpdatingLocation];
 
@@ -72,19 +71,24 @@ BarListStatus currentDisplayedCategory;
     self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(CONCRETE, 1);
     self.navigationController.navigationBar.translucent = NO;
-    
+    CGRect rect = self.view.bounds;
+    rect.size.height -= 65;
+    self.tableView.frame = rect;
     self.tableView.backgroundColor = [UIColor blackColor];
     self.view.backgroundColor = [UIColor blackColor];
     self.selectedRow = nil;
     selectedBar = nil;
+    [self queryForAllHashtags];
+    
     // Might want to put this back in for ensuring that bars have been loaded.
-    //[self queryParseForBars];
+    [self queryParseForBars];
+    
     
     //Add to NSUserDefaults that user has used the app before
     
     //Check to see if logged in
     if([self checkUserToShowLogin]){
-        
+        //[PFUser logOut];
     }
     else{
         //Add UIElements for signing in
@@ -107,8 +111,8 @@ BarListStatus currentDisplayedCategory;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self queryParseForBars];
-    [self.tableView reloadData];
+    //[self queryParseForBars];
+    //[self.tableView reloadData];
     
    /* if([self.nearbyBars count] == 0)
     {
@@ -150,8 +154,7 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
+{    
     // 5 different cases
     bool noSelectionPreviously = self.selectedRow == nil;
     bool didClickOnDetailRow = ![[tableView cellForRowAtIndexPath:indexPath] isKindOfClass:[BarViewCell class]];
@@ -185,7 +188,6 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     }
     else if(didClickOnRowBelowDetail)
     {
-        NSLog(@"SelectedRow: %i, IP: %i",self.selectedRow.row,indexPath.row);
         NSArray* rowToDelete = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.selectedRow.row+1 inSection:0]];
         NSArray* rowToAdd = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
         self.selectedRow = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:0];
@@ -207,17 +209,42 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     {
         BarDetailTableViewCell * cell = (BarDetailTableViewCell* )[tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER2];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        NSString* barName = ((Bar*)self.nearbyBars[indexPath.row-1]).name;
-        cell.label.text = [@"Details for " stringByAppendingString:barName];
+        
+        //Bar* currentBar = (Bar*)self.nearbyBars[indexPath.row-1];
+        
+#define THRESHOLD .1
+    /*   NSNumber* distance = [self userDistanceInMilesFromBar:currentBar];
+        bool userAtBar = [distance doubleValue] <= THRESHOLD;
+        
+         if(userAtBar){
+             if([PFUser currentUser]){
+               //User is logged in & at the bar, add image with link to bar page
+             }else{
+                 //Add link to bring up login page
+             }
+         }
+         else{
+             //Show hashtag sumamry
+         }*/
+        NSDictionary* barSelected = self.nearbyBars[self.selectedRow.row];
+        NSString* barAddr = barSelected[@"bar"][@"address"];
+        cell.label.text = barAddr;
+        int size;
+        if(barAddr.length > 35)
+            size = 14;
+        else if (barAddr.length > 30)
+            size = 16;
+        else
+            size = 18;
+        
+        cell.label.font = VYBE_FONT(size);
+        [cell.contentView.superview setClipsToBounds:NO];
         [cell setNeedsDisplay];
         return cell;
     }
     
-    
-    
     BarViewCell *cell = (BarViewCell*)[tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
-    
-    int correctRow = indexPath.row;
+    NSInteger correctRow = indexPath.row;
     if(self.selectedRow){
         //A detail row is being shown
         if(self.selectedRow.row < indexPath.row){
@@ -227,7 +254,7 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
         
     }
     
-    Bar* currentBar = self.nearbyBars[correctRow];
+    Bar* currentBar = [[Bar alloc]initWithPFOject:(PFObject *)self.nearbyBars[correctRow][@"bar"]];
     NSString* imageTitle = [[NSString alloc]init];
     NSString* venueType = [NSString stringWithString:currentBar.object[@"venueType"]];
     cell.backgroundColor = [UIColor blackColor];
@@ -253,32 +280,35 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     cell.barNameLabel.text = [[@"  " stringByAppendingString:currentBar.name] uppercaseString];
     
     
-    if([currentBar.name length] > 25)
+    if([currentBar.name length] > 20)
+        cell.barNameLabel.font = VYBE_FONT(16);
+    else if([currentBar.name length] > 16)
         cell.barNameLabel.font = VYBE_FONT(18);
     else
         cell.barNameLabel.font = VYBE_FONT(20);
     
-    cell.barNameLabel.textColor = [UIColor whiteColor];
-    cell.distanceLabel.font = VYBE_FONT(18);
-    cell.distanceLabel.textColor = [UIColor whiteColor];
-    [cell setOpacityofLeftImage:1.0 andRight:1.0];
+    cell.barNameLabel.adjustsFontSizeToFitWidth = YES;
     
-    cell.barNameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5];
+    cell.barNameLabel.textColor = cell.distanceLabel.textColor = [UIColor whiteColor];
+   // cell.barNameLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5];
     
+    cell.distanceLabel.font = VYBE_FONT(16);
+    cell.distanceLabel.adjustsFontSizeToFitWidth = YES;
+   // cell.distanceLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5];
     
-    [cell setVisibility:NO andDistanceLabel:YES];
-    [cell setLeftImage:ATMOS_LOW_WHT andRight:ATMOS_HIGH_WHT];
-    CGFloat atmosphereRating = [[currentBar.object objectForKey:@"avgAtmosphere"]floatValue]/100;
-    if([[currentBar.object objectForKey:@"numRatings"]integerValue] == 0)
-    {
-        [cell setOpacityofLeftImage:.5 andRight:.5];
-    }
+    NSDictionary* barRatings = self.nearbyBars[correctRow];
+    NSString* topHashtag = [self getCurrentTopHashtag:barRatings];
+    if([topHashtag isEqualToString:@""])
+        cell.distanceLabel.text = @"";
     else
-    {
-        [cell setOpacityofLeftImage:(1-atmosphereRating) andRight:atmosphereRating];
-    }
-    
+        cell.distanceLabel.text = [@"#" stringByAppendingString:topHashtag];
+                               
+    cell.distanceLabel.textAlignment = NSTextAlignmentRight;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    
+    
+    
     [cell setNeedsDisplay];
     return cell;
 }
@@ -287,26 +317,7 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
 {
     if ([segue.identifier isEqualToString:@"toBar"])
     {
-        //should be ok but might need to adjust for anything above/below
-        selectedBar = [self.nearbyBars objectAtIndex:self.selectedRow.row];
-        NSNumber* distance = [self userDistanceInMilesFromBar:selectedBar];
-        int walkingTime = [distance floatValue]*15;
-        NSNumberFormatter* formatter = [[NSNumberFormatter alloc]init];
-        [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-        [formatter setMaximumFractionDigits:1];
-        NSString* numString = [formatter stringFromNumber:distance];
-        NSString* disLabel;
-        if([numString isEqualToString:@"1"])
-            disLabel = [NSString stringWithFormat:@"%@ mile",numString];
-        else
-            disLabel = [NSString stringWithFormat:@"%@ miles",numString ];
-        if(walkingTime <= 30)
-            disLabel = [disLabel stringByAppendingString:[NSString stringWithFormat:@", %d minute walk",walkingTime]];
-        else
-            disLabel = [disLabel stringByAppendingString:@", Call a cab"];
-        
-        ((BarViewController*) segue.destinationViewController).selectedBar = selectedBar;
-     //   ((BarViewController*) segue.destinationViewController).walkDistanceString = disLabel;
+        ((BarViewController*) segue.destinationViewController).selectedBar = self.nearbyBars[self.selectedRow.row];
     }
 }
 
@@ -316,8 +327,6 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     CLLocationDistance distanceInMeters = [self.location distanceFromLocation:barsLoc];
     return [NSNumber numberWithFloat:distanceInMeters/(1609.34) ];
 }
-
-
 
 
 - (void)drawerControllerWillOpen:(ICSDrawerController *)drawerController
@@ -333,43 +342,61 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
 
 -(void)queryParseForBars
 {
-    
-  /*  if(self.location == nil)
-    {
+  /*if(self.location == nil){
         [NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(queryParseForBars) userInfo:nil repeats:NO];
         return;
     }*/
-    PFQuery *query = [PFQuery queryWithClassName:@"Bar"];
-
-    UIActivityIndicatorView* indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     
+    indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     indicator.center = CGPointMake(self.view.bounds.size.width/2,self.view.bounds.size.height/2);
     indicator.hidesWhenStopped = YES;
     [self.view addSubview:indicator];
     [indicator startAnimating];
    
     //PFGeoPoint* currentLocation = [PFGeoPoint geoPointWithLocation:self.location];
+    //[query whereKey:@"location" nearGeoPoint:currentLocation withinMiles:3000];
     
-
-//    [query whereKey:@"location" nearGeoPoint:currentLocation withinMiles:3000];
+    //Parameters will become geoLocation
+    [PFCloud callFunctionInBackground:@"getData" withParameters:@{} block:^(id object, NSError *error) {
+        
+        if(!error){
+            NSArray* bars = (NSArray*)object;
+            [self setNearbyBars:bars];
+            [indicator stopAnimating];
+            [self fetchAllTimeTopHashtags];
+            [self.tableView reloadData];
+        }else{
+           NSLog(@"Error: %@ %@",error, [error userInfo]);
+        }
+    }];
+    
+}
+-(void)queryForAllHashtags
+{
+    PFQuery* query = [PFQuery queryWithClassName:@"Hashtag"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-     if(!error)
-     {
-        NSMutableArray* temp_bars = [[NSMutableArray alloc]init];
-         for(PFObject *obj in objects)
-         {
-             Bar* bar = [[Bar alloc] initWithPFOject:obj];
-             [temp_bars addObject:bar];
-         }
-         [self setNearbyBars:[NSArray arrayWithArray:temp_bars]];
-         [indicator stopAnimating];
-     }
-     else{
-         NSLog(@"Error: %@ %@",error, [error userInfo]);
-     }
-     }];
-
-    
+        if(!error){
+            
+            NSMutableArray* temp = [[NSMutableArray alloc]init];
+            NSMutableDictionary* tempHash;
+            for(PFObject* o in objects){
+                tempHash = [[NSMutableDictionary alloc]init];
+                [tempHash setObject:o[@"name"] forKey:@"name"];
+                [tempHash setObject:o.objectId forKey:@"objectId"];
+                [temp addObject:tempHash];
+            }
+            NSArray* hashes = [NSArray arrayWithArray:temp];
+            NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults setObject:hashes forKey:@"hashtags"];
+            if(![userDefaults synchronize]){
+                NSLog(@"Failed to store hashtags to NSUserDefaults");
+            }
+        }
+        else{
+            NSLog(@"Unable to grab hashtags Error:%@",[error userInfo]);
+        }
+        
+    }];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
@@ -395,6 +422,62 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     SignUpViewController* signUpVC = [self.storyboard instantiateViewControllerWithIdentifier:@"signUpVC"];
     [self presentViewController:signUpVC animated:YES completion:nil];
 }
+
+//Gets you the top current hashtag
+-(NSString*)getCurrentTopHashtag:(NSDictionary*)barDict{
+    
+    NSArray* ratings = [barDict objectForKey:@"ratings"];
+    NSMutableDictionary* hashtagValues = [[NSMutableDictionary alloc]init];
+    
+    for(NSDictionary* rating in ratings){
+        NSNumber* value;
+        NSNumber* htValue = [hashtagValues objectForKey:rating[@"hashtag"]];
+        if(htValue){
+            value = [NSNumber numberWithInt:[htValue intValue] + [rating[@"score"] intValue]];
+        }
+        else{
+            value = [NSNumber numberWithInt:[rating[@"score"]intValue]];
+        }
+        [hashtagValues setObject:value forKey:rating[@"hashtag"]];
+    }
+    NSArray* sortedKeys = [hashtagValues keysSortedByValueUsingComparator: ^(id obj1, id obj2) {
+        
+        if ([obj1 integerValue] > [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if ([obj1 integerValue] < [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    
+    if(sortedKeys.count == 0)
+        return @"";
+    
+    return [sortedKeys objectAtIndex:0];
+}
+
+-(void)fetchAllTimeTopHashtags
+{
+    for(NSMutableDictionary* bar in self.nearbyBars)
+    {
+        NSString* barId = ((PFObject*)bar[@"bar"]).objectId;
+        [PFCloud callFunctionInBackground:@"getTopHashtags" withParameters:@{@"bar":barId} block:^(id object, NSError *error) {
+           
+            NSArray* topHashtags = (NSArray*)object;
+            
+            [barTopHashtagMap setObject:topHashtags forKey:barId];
+            
+            if([barTopHashtagMap allKeys].count == self.nearbyBars.count)
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:barTopHashtagMap forKey:@"topHashtagsForBars"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+        }];
+        
+    }
+}
+
 
 
 

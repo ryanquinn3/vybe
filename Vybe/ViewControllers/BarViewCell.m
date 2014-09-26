@@ -15,14 +15,16 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-       
     }
     return self;
 }
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    CGRect rect = CGRectMake(0, 0, self.contentView.frame.size.width, 53);
+    self.infoBackgroundView = [[UIView alloc]initWithFrame:rect];
+    self.infoBackgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5];
+    [self.contentView insertSubview:self.infoBackgroundView belowSubview:self.barNameLabel];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -32,25 +34,13 @@
     // Configure the view for the selected state
 }
 
-
--(void)setVisibility:(BOOL)images andDistanceLabel:(BOOL)label
+-(void)setinfoBackgroundViewHeight:(int)height
 {
-    self.rightIconImageView.hidden = images;
-    self.leftIconImageView.hidden = images;
-    self.distanceLabel.hidden = label;
+    CGRect r = self.infoBackgroundView.frame;
+    r.size.height = height;
+    self.infoBackgroundView.frame = r;
+    
 }
--(void)setLeftImage:(NSString*)leftImageName andRight:(NSString*)rightImageName
-{
-    [self.leftIconImageView setImage:[UIImage imageNamed:leftImageName]];
-    [self.rightIconImageView setImage:[UIImage imageNamed:rightImageName]];
-}
--(void)setOpacityofLeftImage:(CGFloat)leftOpacity andRight:(CGFloat)rightOpacity
-{
-    self.leftIconImageView.alpha = leftOpacity;
-    self.rightIconImageView.alpha = rightOpacity;
-}
-
-
 
 
 @end

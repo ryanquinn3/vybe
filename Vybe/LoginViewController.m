@@ -84,6 +84,7 @@
             if(user)
             {
                 [self dismissViewControllerAnimated:YES completion:nil];
+                NSLog(@"signed in!");
             }
             else{
                 

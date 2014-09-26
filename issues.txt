@@ -1,0 +1,15 @@
+/*
+* Ryan Quinn
+* Vybe Application
+* Known Issues & Limitations / Todo's
+*/
+
+
+
+ - Get white clean images from Angeline
+
+ - Last cell in BarListViewController doesn't show all the way.
+
+ - On return to BarListViewController, we don't need the ActivityIndicator
+
+ - Proper font adjustments on labels on BarListVC & BarViewVC

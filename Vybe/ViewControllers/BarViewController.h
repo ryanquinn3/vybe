@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "Bar.h"
+#import <QuartzCore/QuartzCore.h>
+#import "HashtagTableViewController.h"
 #import "RateBarViewController.h"
 
 @interface BarViewController : UIViewController
-@property (nonatomic, strong) Bar *selectedBar;
-@property (strong, nonatomic) IBOutlet UILabel *walkDistanceLabel;
+@property (nonatomic, strong) NSMutableDictionary *selectedBar;
 @property (strong,nonatomic) NSString* walkDistanceString;
+@property (strong,nonatomic) NSMutableArray* submittedHashtags;
+-(void)returnFromHashtagSelect;
+-(void)updateRatingsFromParse;
 @end

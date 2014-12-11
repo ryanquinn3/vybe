@@ -35,13 +35,14 @@
     
     if(IS_IPHONE_4)
     {
-        CGRect formRect = self.loginForm.bounds;
-        formRect.origin.y -= 30;
-        self.loginForm.bounds = formRect;
+        CGRect formRect = self.loginForm.frame;
+        formRect.origin.y -= 60;
+        self.loginForm.frame = formRect;
     }
-    
-    
-    
+    self.usernameField.layer.cornerRadius = self.passwordField.layer.cornerRadius = 8.0f;
+    self.usernameField.layer.masksToBounds = self.passwordField.layer.masksToBounds = YES;
+    self.usernameField.layer.borderColor = self.passwordField.layer.borderColor = UIColorFromRGB(0xFFFFFF, .4).CGColor;;
+    self.usernameField.layer.borderWidth = self.passwordField.layer.borderWidth = 1.0f;
     
     // Do any additional setup after loading the view.
 }
@@ -52,7 +53,7 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)dismissPressed:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 - (IBAction)signUpPressed:(id)sender {
     
@@ -61,8 +62,6 @@
     ICSDrawerController* icsDC = (ICSDrawerController*)self.presentingViewController;
     ListNavViewController* lnVC = (ListNavViewController*)icsDC.centerViewController;
     BarListViewController* blVC = (BarListViewController*)[lnVC.viewControllers objectAtIndex:[lnVC.viewControllers count]-1];
-     
-    //BarListViewController* blVC = (BarListViewController*)self.presentingViewController;
     [self dismissViewControllerAnimated:YES completion:^{
          [blVC presentSignUpViewController];
     }];
@@ -83,7 +82,7 @@
                                         block:^(PFUser *user, NSError *error) {
             if(user)
             {
-                [self dismissViewControllerAnimated:YES completion:nil];
+                [self dismissViewControllerAnimated:NO completion:nil];
                 NSLog(@"signed in!");
             }
             else{
@@ -121,11 +120,6 @@
     }
     
     return nil;
-    
-    
-    
-    
-    
 }
 
 

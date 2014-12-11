@@ -37,14 +37,14 @@ function getAllRatings(barData,data,response,max){
 
         if( Math.abs(now-dateCreated)/36e5 < 12 )
         {
-            ratingData = {
-            "hashtag": rating.get("hashtag").get("name"),
-            "hashtagId": rating.get("hashtag").id,
-            "user": rating.get("user").id,
-            "score": rating.get("score"),
-            "createdAt": rating.createdAt
-            };
-            ratingArray.push(ratingData);
+            ratingArray.push({
+              "hashtag": rating.get("hashtag").get("name"),
+              "hashtagId": rating.get("hashtag").id,
+              "user": rating.get("user").id,
+              "score": rating.get("score"),
+              "createdAt": rating.createdAt
+              }
+          );
         }
       }
       barData["ratings"] = ratingArray;

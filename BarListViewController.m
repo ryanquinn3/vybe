@@ -25,7 +25,6 @@ Bar* selectedBar;
 
 BarListStatus currentDisplayedCategory;
 
-NSMutableDictionary* barHashtagMap;
 NSMutableDictionary* barTopHashtagMap;
 UIActivityIndicatorView* indicator;
 
@@ -61,7 +60,7 @@ UIActivityIndicatorView* indicator;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    barHashtagMap = [[NSMutableDictionary alloc]init];
+    
     barTopHashtagMap = [[NSMutableDictionary alloc]init];
     self.transitionController = [[TransitionDelegate alloc] init];
     [self.locationManager startUpdatingLocation];
@@ -83,18 +82,13 @@ UIActivityIndicatorView* indicator;
     // Might want to put this back in for ensuring that bars have been loaded.
     [self queryParseForBars];
     
-    
     //Add to NSUserDefaults that user has used the app before
+    //[PFUser logOut];
     
     //Check to see if logged in
     if([self checkUserToShowLogin]){
         //[PFUser logOut];
     }
-    else{
-        //Add UIElements for signing in
-    }
-    
-	
 }
 
 -(BOOL)checkUserToShowLogin
@@ -112,7 +106,7 @@ UIActivityIndicatorView* indicator;
 {
     [super viewWillAppear:animated];
     //[self queryParseForBars];
-    //[self.tableView reloadData];
+    [self.tableView reloadData];
     
    /* if([self.nearbyBars count] == 0)
     {
@@ -122,7 +116,6 @@ UIActivityIndicatorView* indicator;
     }*/
     
     [self checkUserToShowLogin];
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -208,37 +201,37 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     if(self.selectedRow && self.selectedRow.row+1 == indexPath.row)
     {
         BarDetailTableViewCell * cell = (BarDetailTableViewCell* )[tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER2];
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        //Bar* currentBar = (Bar*)self.nearbyBars[indexPath.row-1];
-        
+        NSDictionary* barSelected = self.nearbyBars[self.selectedRow.row];
+
+        Bar* currentBar = [[Bar alloc]initWithPFOject:((PFObject*)barSelected[@"bar"])];
 #define THRESHOLD .1
-    /*   NSNumber* distance = [self userDistanceInMilesFromBar:currentBar];
+        
+        CLLocation* barLocation = [[CLLocation alloc]initWithLatitude:currentBar.latitude longitude:currentBar.longitude];
+        NSNumber* distance = [self userDistanceInMilesFromBar:barLocation];
+        
         bool userAtBar = [distance doubleValue] <= THRESHOLD;
         
-         if(userAtBar){
+       /*  if(userAtBar){
              if([PFUser currentUser]){
                //User is logged in & at the bar, add image with link to bar page
              }else{
                  //Add link to bring up login page
              }
          }
-         else{
-             //Show hashtag sumamry
-         }*/
-        NSDictionary* barSelected = self.nearbyBars[self.selectedRow.row];
-        NSString* barAddr = barSelected[@"bar"][@"address"];
-        cell.label.text = barAddr;
-        int size;
-        if(barAddr.length > 35)
-            size = 14;
-        else if (barAddr.length > 30)
-            size = 16;
-        else
-            size = 18;
-        
-        cell.label.font = VYBE_FONT(size);
-        [cell.contentView.superview setClipsToBounds:NO];
+         else{*/
+             BarSummaryView* sumView = (BarSummaryView*)cell.customView;
+             NSArray* hashes = [self sortedHashTags:barSelected];
+             if([hashes count] > 6 )
+                 hashes = [hashes subarrayWithRange:NSMakeRange(0, 6)];
+             
+             [sumView setHashtags:hashes];
+             [sumView doDraw];
+             [sumView.goButton addTarget:self action:@selector(performSegueToBar) forControlEvents:UIControlEventTouchUpInside];
+         //}
+       
+        cell.clipsToBounds = YES;
         [cell setNeedsDisplay];
         return cell;
     }
@@ -279,7 +272,6 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     cell.backgroundView = cellImage;
     cell.barNameLabel.text = [[@"  " stringByAppendingString:currentBar.name] uppercaseString];
     
-    
     if([currentBar.name length] > 20)
         cell.barNameLabel.font = VYBE_FONT(16);
     else if([currentBar.name length] > 16)
@@ -313,6 +305,12 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     return cell;
 }
 
+
+-(void)performSegueToBar
+{
+    [self performSegueWithIdentifier:@"toBar" sender:self];
+}
+
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"toBar"])
@@ -321,10 +319,9 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     }
 }
 
--(NSNumber*)userDistanceInMilesFromBar:(Bar*)bar
+-(NSNumber*)userDistanceInMilesFromBar:(CLLocation*)bar
 {
-    CLLocation* barsLoc = [[CLLocation alloc] initWithLatitude:bar.latitude longitude:bar.longitude];
-    CLLocationDistance distanceInMeters = [self.location distanceFromLocation:barsLoc];
+    CLLocationDistance distanceInMeters = [self.location distanceFromLocation:bar];
     return [NSNumber numberWithFloat:distanceInMeters/(1609.34) ];
 }
 
@@ -371,6 +368,7 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
     }];
     
 }
+
 -(void)queryForAllHashtags
 {
     PFQuery* query = [PFQuery queryWithClassName:@"Hashtag"];
@@ -476,6 +474,37 @@ static NSString * CELL_IDENTIFIER2 = @"detailCell";
         }];
         
     }
+}
+
+
+-(NSArray*)sortedHashTags:(NSDictionary*) barDict{
+    NSArray* ratings = [barDict objectForKey:@"ratings"];
+    NSMutableDictionary* hashtagValues = [[NSMutableDictionary alloc]init];
+    
+    for(NSDictionary* rating in ratings){
+        NSNumber* value;
+        NSNumber* htValue = [hashtagValues objectForKey:rating[@"hashtag"]];
+        if(htValue){
+            value = [NSNumber numberWithInt:[htValue intValue] + [rating[@"score"] intValue]];
+        }
+        else{
+            value = [NSNumber numberWithInt:[rating[@"score"]intValue]];
+        }
+        [hashtagValues setObject:value forKey:rating[@"hashtag"]];
+    }
+    NSArray* sortedKeys = [hashtagValues keysSortedByValueUsingComparator: ^(id obj1, id obj2) {
+        
+        if ([obj1 integerValue] > [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if ([obj1 integerValue] < [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    
+    return sortedKeys;
+    
 }
 
 

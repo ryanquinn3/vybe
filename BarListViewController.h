@@ -16,6 +16,7 @@
 #import "LoginViewController.h"
 #import "TransitionDelegate.h"
 #import "SignUpViewController.h"
+#import "BarSummaryView.h"
 #import "BarDetailTableViewCell.h"
 
 

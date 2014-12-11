@@ -7,7 +7,6 @@
 //
 
 #import "BarViewCell.h"
-#import "BarQuickView.h"
 
 @implementation BarViewCell
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>0F00D098-91D3-4EAB-8CEB-3AA14B88EF31</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Vybe</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>06091F26AC66FE7F99BD17B83F8387EA5A0EA0E3</key>
+		<string>http://www.github.com/ryanquinn3/Vybe.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Vybe.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>06091F26AC66FE7F99BD17B83F8387EA5A0EA0E3</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://www.github.com/ryanquinn3/Vybe.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>06091F26AC66FE7F99BD17B83F8387EA5A0EA0E3</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>06091F26AC66FE7F99BD17B83F8387EA5A0EA0E3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Vybe</string>
+		</dict>
+	</array>
+</dict>
+</plist>

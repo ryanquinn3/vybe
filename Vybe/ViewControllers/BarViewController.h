@@ -10,7 +10,6 @@
 #import "Bar.h"
 #import <QuartzCore/QuartzCore.h>
 #import "HashtagTableViewController.h"
-#import "RateBarViewController.h"
 
 @interface BarViewController : UIViewController
 @property (nonatomic, strong) NSMutableDictionary *selectedBar;

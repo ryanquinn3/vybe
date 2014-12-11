@@ -34,17 +34,15 @@
 #define DWNVOTED_BG UIColorFromRGB(0, .9)
 #define DWNVOTED_TX UIColorFromRGB(0xffffff, .15)
 
+
+//TODO: FIX # when empty string passed in
+
 @implementation BarViewController
 
 float contentSize;
 NSArray* sortedHashtagList;
 bool shouldHideSubmitButton;
 
-- (void)updateBarInfo
-{
-    self.barTitle.text = self.selectedBar[@"bar"][@"name"];
-    self.barAddress.text = self.selectedBar[@"bar"][@"address"];
-}
 - (IBAction)refreshPressed:(id)sender {
     
     [self updateRatingsFromParse];
@@ -62,43 +60,45 @@ bool shouldHideSubmitButton;
     [self initTypicalSection];
     [self initCurrentSection];
     [self addSubmitNewHashTag];
-    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+15)];
+    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+30)];
     
-    
-
 }
 
 -(void)initTextSection
 {
-    CGRect barTitleRect = CGRectMake(5,5,290,30);
-    CGRect barAddressRect = CGRectMake(5,28,290,24);
+    float screenWidth = self.view.bounds.size.width;
+    
+    CGRect barTitleRect = CGRectMake(5,5,screenWidth/2,30);
+    CGRect barAddressRect = CGRectMake(5,35,screenWidth/2,24);
     
     self.barTitle = [[UILabel alloc]initWithFrame:barTitleRect];
     self.barAddress = [[UILabel alloc] initWithFrame:barAddressRect];
     
-    [self updateBarInfo];
+    self.barTitle.text = [self.selectedBar[@"bar"][@"name"] uppercaseString];
+    self.barAddress.text = self.selectedBar[@"bar"][@"address"];
     
+
     //Will need to adjust for length here
-    self.barTitle.font = VYBE_FONT_LT(24);
+    self.barTitle.font = VYBE_FONT(28);
+    
+    
     if(self.barAddress.text.length > 30)
         self.barAddress.font = VYBE_FONT_LT(14);
     else
         self.barAddress.font = VYBE_FONT_LT(18);
     
-    self.barTitle.textColor = self.barAddress.textColor = WHITE;
-    self.barTitle.shadowColor = self.barAddress.shadowColor = WHITE;
-    self.barTitle.shadowOffset = self.barAddress.shadowOffset = CGSizeMake(0,1.0);
-    self.barTitle.textAlignment = self.barAddress.textAlignment = NSTextAlignmentCenter;
+    self.barTitle.textColor = UIColorFromRGB(CONCRETE, 1);
+    self.barAddress.textColor = WHITE;
+    self.barTitle.adjustsFontSizeToFitWidth = self.barAddress.adjustsFontSizeToFitWidth = YES;
+    self.barTitle.textAlignment = self.barAddress.textAlignment = NSTextAlignmentLeft;
 
-    UIView* textBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(15, 20, 290, 130)];
+    UIView* textBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0,screenWidth, 112)];
     
-    textBackgroundView.backgroundColor = UIColorFromRGB(0, .7);
-    textBackgroundView.layer.cornerRadius = 5;
-    textBackgroundView.layer.masksToBounds = YES;
+    textBackgroundView.backgroundColor = UIColorFromRGB(0, .6);
     [textBackgroundView addSubview:self.barTitle];
     [textBackgroundView addSubview:self.barAddress];
     
-    UIImageView* barTypeImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 168)];
+    UIImageView* barTypeImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 168)];
     NSString* venueType = self.selectedBar[@"bar"][@"venueType"];
     barTypeImage.image = [UIImage imageNamed:[self imageNameForBarType:venueType]];
     
@@ -107,18 +107,12 @@ bool shouldHideSubmitButton;
     
     contentSize += barTypeImage.bounds.size.height;
     
-    UIView* dividerView = [[UIView alloc]initWithFrame:CGRectMake(10, contentSize, 300, 2)];
-    [dividerView setBackgroundColor:UIColorFromRGB(0xFFFFFF, .4)];
-    dividerView.layer.cornerRadius = 1;
-    [self.scrollView addSubview:dividerView];
-    
 }
 
 
 -(void)initTypicalSection
 {
     
-    //NSArray* typicalHashTags = [NSArray arrayWithObjects:@"crowded",@"young",@"dancing",nil];
     NSString* barId = ((PFObject*)self.selectedBar[@"bar"]).objectId;
     NSDictionary* topMap = [[NSUserDefaults standardUserDefaults]objectForKey:@"topHashtagsForBars"];
     NSArray* thisMap = [topMap objectForKey:barId];
@@ -129,89 +123,74 @@ bool shouldHideSubmitButton;
     for(NSDictionary* entry in thisMap){
         [typicalHashTags addObject:entry[@"hashtag"]];
     }
-    if([typicalHashTags count] == 0){
-        [typicalHashTags addObject:@" "];
+    if([typicalHashTags count]){
+        float screenWidth = self.view.bounds.size.width;
+        float buffer = 10;
+        CGRect bgRect = CGRectMake(screenWidth/2 + buffer, buffer, screenWidth/2 - 2*buffer, 112 - 2*buffer);
+        UIView* topHashtagsView = [[UIView alloc]initWithFrame:bgRect];
+        
+        topHashtagsView.backgroundColor = BLACK;
+        topHashtagsView.layer.cornerRadius = 10;
+        topHashtagsView.layer.masksToBounds = YES;
+        
+        topHashtagsView.layer.borderColor = UIColorFromRGB(0xFFFFFF, .4).CGColor;
+        topHashtagsView.layer.borderWidth = 1.0f;
+        
+        UILabel* label;
+        CGRect labelRect;
+        int innerBuf = 5, height = 25;
+        for(int i = 0; i < [typicalHashTags count]; i ++)
+        {
+            labelRect = CGRectMake(innerBuf, innerBuf + i*(height+innerBuf), 140 - innerBuf*2, height);
+            label = [[UILabel alloc]initWithFrame:labelRect];
+            
+            label.text = [@"#" stringByAppendingString:typicalHashTags[i]];
+            label.textColor = i == 0 ? UIColorFromRGB(CONCRETE, 1) : WHITE;
+            label.font = VYBE_FONT(16);
+            label.adjustsFontSizeToFitWidth = YES;
+            label.textAlignment = NSTextAlignmentCenter;
+            [topHashtagsView addSubview:label];
+            
+        }
+        
+        [self.scrollView addSubview:topHashtagsView];
+        
     }
     
-    
-    
-    NSString* trendingHeader = @"Typical Vybes";
-    UIView* trendingSection = [self hashTagSection:CGPointMake(0, 70) withHashTags:typicalHashTags andTitle:trendingHeader];
-    [self.scrollView addSubview:trendingSection];
+    /*NSString* typicalHeader = @"Typical Vybes";
+    UIView* typicalSection = [self hashTagSection:CGPointMake(0, 70) withHashTags:typicalHashTags andTitle:typicalHeader];
+    [self.scrollView addSubview:typicalSection];*/
 }
 
 -(void)initCurrentSection
 {
     
-    UILabel* currentVybeLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, contentSize+SPACE_OFFSET, 290, 30)];
+    UILabel* currentVybeLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, contentSize, 290, 30)];
     currentVybeLabel.font = VYBE_FONT(20);
     currentVybeLabel.textColor = UIColorFromRGB(CONCRETE, .9);
-    currentVybeLabel.text = @"Tonight's vybes";
+    currentVybeLabel.text = [@"Tonight's vybes" uppercaseString];
     
     [self.scrollView addSubview:currentVybeLabel];
     contentSize += currentVybeLabel.bounds.size.height;
+    
+    UIView* dividerView = [[UIView alloc]initWithFrame:CGRectMake(10, contentSize, 300, 2)];
+    [dividerView setBackgroundColor:UIColorFromRGB(0xFFFFFF, .4)];
+    dividerView.layer.cornerRadius = 1;
+    [self.scrollView addSubview:dividerView];
+    
+    contentSize += dividerView.bounds.size.height;
     
     NSArray* currentHashTags = [self sortedHashTags:self.selectedBar];
     
     
     for (NSString* hashTag in currentHashTags) {
 
-        CGRect hashtagRect = CGRectMake(15, contentSize +SPACE_OFFSET, 290, 40);
+        CGRect hashtagRect = CGRectMake(15, contentSize + SPACE_OFFSET, 290, 40);
         [self.scrollView addSubview:[self hashtagRow:hashtagRect withHashTag:[@"#" stringByAppendingString:hashTag]]];
         contentSize += hashtagRect.size.height+SPACE_OFFSET;
     }
 }
 
-
--(UIView*)hashTagSection:(CGPoint)origin withHashTags:(NSArray*)hashTags andTitle:(NSString*)title
-{
-    
-    
-    UILabel* heading = [[UILabel alloc] initWithFrame:CGRectMake(25,0, 270, 30)];
-    heading.text = title;
-    heading.font = VYBE_FONT(16);
-    heading.textColor = WHITE;
-    
-    float labelHeight = 30.0;
-    int numRows = (int)((hashTags.count-1) / 3) + 1;
-    
-    float bgViewHeight = (labelHeight * numRows) + 10;
-    
-    UIView* hashTagBGView = [[UIView alloc] initWithFrame:CGRectMake(25,27,270,bgViewHeight)];
-    hashTagBGView.layer.borderColor = UIColorFromRGB(0xffffff, .4).CGColor;
-    hashTagBGView.layer.borderWidth = 2.0;
-    hashTagBGView.layer.cornerRadius = 15;
-    hashTagBGView.layer.masksToBounds = YES;
-    
-    UILabel* hashLabel;
-    float labelWidth = hashTagBGView.bounds.size.width / 3;
-    
-    for(int i = 0; i < hashTags.count; i++)
-    {
-        int row = (i / 3);
-        
-        hashLabel = [[UILabel alloc] initWithFrame:CGRectMake(i*labelWidth, 5+(labelHeight * row), labelWidth, labelHeight)];
-        hashLabel.font = VYBE_FONT_LT(18);
-        hashLabel.textColor = [UIColor whiteColor];
-        hashLabel.shadowColor = [UIColor whiteColor];
-        hashLabel.shadowOffset = CGSizeMake(0, 1.0);
-        hashLabel.text = [@"#" stringByAppendingString:hashTags[i]];
-        hashLabel.textAlignment = NSTextAlignmentCenter;
-        hashLabel.adjustsFontSizeToFitWidth = YES;
-        [hashTagBGView addSubview:hashLabel];
-        
-        
-    }
-    
-    float sectionHeight = heading.frame.size.height + bgViewHeight + 5;
-    
-    CGRect sectionRect = CGRectMake(origin.x, origin.y, 320, sectionHeight);
-    UIView* sectionView = [[UIView alloc]initWithFrame:sectionRect];
-    [sectionView addSubview:heading];
-    [sectionView addSubview: hashTagBGView];
-    
-    return sectionView;
-}
 
 
 -(UIView*)hashtagRow:(CGRect)rect withHashTag:(NSString*)hashTag
@@ -325,13 +304,18 @@ bool shouldHideSubmitButton;
     self.submittedHashtags = [[NSMutableArray alloc]init];
     sortedHashtagList = [self sortedHashTags:self.selectedBar];
     
+    CGRect scrollRect = self.scrollView.frame;
+    scrollRect.size.height -= 65;
+    self.scrollView.frame = scrollRect;
+    
+    
     contentSize = 0.0;
     [self initTextSection];
     //Update bar stats was here
     [self initTypicalSection];
     [self initCurrentSection];
     [self addSubmitNewHashTag];
-    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+15)];
+    [self.scrollView setContentSize:CGSizeMake(self.view.bounds.size.width, contentSize+NAVBAR_SIZE+30)];
 
 }
 

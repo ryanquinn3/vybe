@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "BarListViewController.h"
 #import "ICSDrawerController.h"
 #import "ListNavViewController.h"

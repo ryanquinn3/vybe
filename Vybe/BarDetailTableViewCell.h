@@ -10,5 +10,7 @@
 
 @interface BarDetailTableViewCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UILabel *label;
+@property (strong, nonatomic) IBOutlet UIButton *goButton;
+@property (strong, nonatomic) IBOutlet UIView *customView;
 
 @end
